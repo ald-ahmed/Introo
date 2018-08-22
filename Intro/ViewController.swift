@@ -23,6 +23,7 @@ import NVActivityIndicatorView
 import Pastel
 import Repeat
 import PhoneNumberKit
+import Hero
 
 class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndicatorViewable {
     
@@ -108,8 +109,8 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
             }
         }
 
-        self.isA = 0
-        self.wantsA = 1
+//        self.isA = 0
+//        self.wantsA = 1
         
         self.shareNumber.isHidden = true;
         self.phoneNumberField.isHidden = true;
@@ -155,6 +156,8 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+      
         
         
         self.initFreshSession();
@@ -289,6 +292,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
                 if (existence == "" || snapshot.value == nil ){
                     self.endMatching()
                     self.performSegue(withIdentifier: "goToSettings", sender: self)
+                    self.message.isHidden = true;
                 }
                     
                 else {
@@ -368,14 +372,16 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     
     func updateUserProfile() {
         
-        let name = UserDefaults.standard.string(forKey: "name") ?? ""
-//        if name == self.nameOfPerson { return }
         
         print("updating")
+        
         self.ref.child("users").child(self.uniqueUserID).setValue(["name": String(self.nameOfPerson), "isA": self.isA, "wantsA": self.wantsA, "contacts": self.getContacts()])
+        
         print("finished updating")
 
         UserDefaults.standard.set(self.nameOfPerson, forKey: "name")
+        UserDefaults.standard.set(self.isA, forKey: "isA")
+        UserDefaults.standard.set(self.wantsA, forKey: "wantsA")
 
     }
     
@@ -459,7 +465,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         self.endMatching();
         self.hideLoadingAnimation();
-        
         self.menuImage.isHidden = true;
         
     }
@@ -512,16 +517,23 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
 
     func textOtherPerson(){
         
+        
+        let selfRef = self.ref.child("sessions").child(self.connectedSessionID);
+        
+        selfRef.child("openedInIMessage").setValue("1")
+
+        
         let phoneNumber = self.otherPersonsPhoneNumber
-        let text = "Say something to " + self.nameLabel.text!
+        let text = "Here's " + self.nameLabel.text!.replacingOccurrences(of: ":", with: "") + " number, good luck!"
+        
 
         
         let sms: String = "sms:"+phoneNumber!+"&body="+text
         let strURL: String = sms.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         UIApplication.shared.open(URL.init(string: strURL)!, options: [:], completionHandler: nil)
-
         
     }
+    
     @IBAction func shareNumberPressed(_ sender: Any) {
         
         if (self.shareNumber.titleLabel?.text != "Share Number" && self.shareNumber.titleLabel?.text != "Open in IMessage"){
@@ -595,12 +607,14 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         print ("startMatching")
         print ("name is ", self.nameOfPerson)
 
-        
+
+        self.menuImage.alpha = 0;
+
         UIView.animate(withDuration: 1, delay: 0.0, options: [.curveEaseOut], animations: {
-            self.menuImage.alpha = 0;
             self.menuImage.alpha = 1;
             self.menuImage.isHidden = false;
-            
+            self.message.isHidden = false;
+
         }, completion: nil)
         
         
@@ -791,6 +805,11 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
                 self.otherPersonsPhoneNumber = value;
                 self.shareNumber.setTitle("Open in IMessage", for: .normal)
 
+            }
+            
+            
+            if (key == "openedInIMessage"){
+                self.textOtherPerson();
             }
             
             

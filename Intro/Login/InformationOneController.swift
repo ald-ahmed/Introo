@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Hero
 import BetterSegmentedControl
 
 class InformationOneController: UIViewController, UITextFieldDelegate {
@@ -22,6 +23,7 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
 
         
+
         let name = UserDefaults.standard.string(forKey: "name") ?? "";
         self.nameField.text = name;
         self.nameField.delegate = self;
@@ -44,6 +46,18 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         
         
         view.addGestureRecognizer(tap)
+        
+        
+        do {
+            try self.isA.setIndex(UInt(UserDefaults.standard.integer(forKey: "isA") ))
+            try self.wantsA.setIndex(UInt(UserDefaults.standard.integer(forKey: "wantsA") ))
+        }
+        catch{
+            print("")
+        }
+        
+//        self.wantsA.setIndex(UserDefaults.standard.string(forKey: "wantsA") ?? 0)
+
         
     }
     
@@ -97,6 +111,10 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         self.dismiss(animated: true) {
             
             mainViewController?.nameOfPerson = self.nameField.text?.trim()
+            mainViewController?.isA = Int(self.isA.index)
+            mainViewController?.wantsA = Int(self.wantsA.index)
+
+
             mainViewController?.menuImage.alpha = 0;
 
             UIView.animate(withDuration: 1, delay: 0.0, options: [.curveEaseOut], animations: {

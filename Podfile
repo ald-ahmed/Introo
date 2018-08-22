@@ -25,6 +25,8 @@ pod 'FirebaseFunctions'
     pod 'Alamofire', '~> 4.7'
 pod 'NVActivityIndicatorView'
 
+pod "Hero"
+
 pod 'AudioKit', '~> 4.0'
 pod 'BetterSegmentedControl'
 
