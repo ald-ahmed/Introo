@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (4.7.2)
+  - AnimatedCollectionViewLayout (0.3.0)
   - AudioKit (4.2.4):
     - AudioKit/UI (= 4.2.4)
   - AudioKit/UI (4.2.4)
@@ -33,7 +34,6 @@ PODS:
   - "GoogleToolboxForMac/NSData+zlib (2.1.4)":
     - GoogleToolboxForMac/Defines (= 2.1.4)
   - GTMSessionFetcher/Core (1.1.15)
-  - Hero (1.2.0)
   - leveldb-library (1.20)
   - nanopb (0.3.8):
     - nanopb/decode (= 0.3.8)
@@ -58,6 +58,7 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 4.7)
+  - AnimatedCollectionViewLayout
   - AudioKit (~> 4.0)
   - BetterSegmentedControl
   - Firebase
@@ -65,7 +66,6 @@ DEPENDENCIES:
   - FirebaseDatabase
   - FirebaseFunctions
   - FirebaseStorage
-  - Hero
   - NVActivityIndicatorView
   - paper-onboarding
   - Pastel
@@ -78,6 +78,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
+    - AnimatedCollectionViewLayout
     - AudioKit
     - BetterSegmentedControl
     - Firebase
@@ -89,7 +90,6 @@ SPEC REPOS:
     - FirebaseStorage
     - GoogleToolboxForMac
     - GTMSessionFetcher
-    - Hero
     - leveldb-library
     - nanopb
     - NVActivityIndicatorView
@@ -103,6 +103,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Alamofire: e4fa87002c137ba2d8d634d2c51fabcda0d5c223
+  AnimatedCollectionViewLayout: 504b992a4258eb39d2dd2b2b48e84b4b95860fd7
   AudioKit: 90ed0de2bc50ab68306f4b424ae1622fc9149b8e
   BetterSegmentedControl: 40b2b6a08bbc59663149624d1b5235efa8d43a3c
   Firebase: d6861c2059d8c32d1e6dd8932e22ada346d90a3a
@@ -114,7 +115,6 @@ SPEC CHECKSUMS:
   FirebaseStorage: 7ca4bb7b58a25fa647b04f524033fc7cb7eb272b
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
   GTMSessionFetcher: 5fa5b80fd20e439ef5f545fb2cb3ca6c6714caa2
-  Hero: 33dadf2cd1c98af71e213dcbc2902e6e03622a4e
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   NVActivityIndicatorView: 8068ba3ad39cb44cbaab25d89ff2546b3f092681
@@ -126,6 +126,6 @@ SPEC CHECKSUMS:
   SwiftSiriWaveformView: baa04ed2089e854af00ea54c38a7700ca43d7ae0
   TwilioVideo: f5452d597caaa2cdf2cd588e4e93493688edaf23
 
-PODFILE CHECKSUM: a70c4e69ebb5577260eeed7acf521c87829fdb1c
+PODFILE CHECKSUM: 98b884ec3d79773eccc6bcb1d27dd0c1301c3872
 
 COCOAPODS: 1.5.3

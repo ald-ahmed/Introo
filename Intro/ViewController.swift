@@ -23,9 +23,14 @@ import NVActivityIndicatorView
 import Pastel
 import Repeat
 import PhoneNumberKit
-import Hero
+import AnimatedCollectionViewLayout
 
-class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndicatorViewable {
+
+class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndicatorViewable, UICollectionViewDelegate, UICollectionViewDataSource {
+    
+    
+    
+    @IBOutlet weak var ActiveCollectionView: ActiveCollectionView!
     
     @IBOutlet weak var recordButton: RecordButton!
     @IBOutlet weak var waveform: SwiftSiriWaveformView!
@@ -79,6 +84,8 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     var nameOfPerson: String!;
     var isA: Int!;
     var wantsA: Int!;
+    var emoji: Int!;
+    
     var otherPersonsPhoneNumber: String!;
 
     var numberOfUploadedAudioFiles: Int = 0;
@@ -91,86 +98,32 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     var queueTimer_: Repeater!
     
     var activityIndicatorView: NVActivityIndicatorView!;
-
     
-    func initFreshSession() {
-        
-//        self.recordButton.sendActions(for: UIControlEvents.touchUpInside)
-//
-        
-        if (self.nameOfPerson == nil) {
-            let name = UserDefaults.standard.string(forKey: "name") ?? "";
-            
-            if name != "" {
-                self.nameOfPerson = name;
-            }
-            else {
-                self.nameOfPerson = self.uniqueUserID
-            }
-        }
-
-//        self.isA = 0
-//        self.wantsA = 1
-        
-        self.shareNumber.isHidden = true;
-        self.phoneNumberField.isHidden = true;
-
-        self.connectedSessionID = nil;
-        self.noOneConnectedToMe = true;
-        
-        self.connectedSessionWasRemovedObserver = nil;
-        self.connectedSessionAddedAudioObserver = nil;
-        self.imIFirstOrSecondParticipant = 0;
-        self.numberOfUploadedAudioFiles = 0;
-        self.recordingButtonElapsedPortion = 0;
-        self.timeToNextPerson = self.timeToNextPersonDefault;
-        self.audioRecorder = nil
-        self.otherPersonsPhoneNumber = ""
-        self.shareNumber.setTitle("Share Number", for: .normal)
-        self.removeBlur();
-        self.stopWaveAnimation();
-        self.hideAllButMenu();
-        self.stopTimer();
-        
-        let startingPoint = timerBGView.bounds.origin.x
-        timeElapsedBar.frame = CGRect(x: startingPoint, y: 0, width: timerBGView.bounds.width, height: timerBGView.frame.height);
-
-    }
+    var users = [""]
     
-    func hideAllButMenu(){
-        
-        self.QuestionCardView.layer.isHidden = true;
-        self.timerBGView.isHidden = true;
-        self.waveform.isHidden = true;
-        self.nameLabel.isHidden = true;
-//        self.recordButton.isHidden = true;
-        
-        if (!self.noOneConnectedToMe){
-            self.shareNumber.isHidden = false;
-        }
-        
-        self.message.isHidden = false;
-        
-    }
+    var emojiCodeWomen = ["👩","👩🏻","👩🏼","👩🏽","👩🏾","👩🏿"]
+    var emojiCodeWomenCounter = 0;
     
+    var emojiCodeMen = ["👨","👨🏻","👨🏼","👨🏽","👨🏾","👨🏿"]
+    var emojiCodeMenCounter = 0;
+ 
+    var startLocation: CGPoint!
+
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         
-      
-        
-        
+        UIApplication.shared.isIdleTimerDisabled = true
+
+        self.ActiveCollectionView.delegate = self;
+        self.ActiveCollectionView.dataSource = self;
+
+        self.ref = Database.database().reference()
         self.initFreshSession();
         
-        self.ref = Database.database().reference()
-        
-        do {
-            self.disconnectFromSession()
-        }
-        catch {
-            print("no active record")
-        }
-        
+        self.setActiveToOff()
+
         self.makeYourselfActive();
         self.loadQuestions()
         
@@ -185,13 +138,18 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         
-        
+        tap.cancelsTouchesInView = false
+
         view.addGestureRecognizer(tap)
         
-        
+        PreviewView.isHidden = true;
+        PreviewView.layer.cornerRadius = 5;
+        PreviewView.layer.shadowColor = #colorLiteral(red: 0.1607843137, green: 0.168627451, blue: 0.1607843137, alpha: 1)
+        PreviewView.layer.shadowOpacity = 0.5;
+        PreviewView.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
+
         shareNumber.layer.cornerRadius = 20;
         QuestionCardView.layer.cornerRadius = 20;
-        
         QuestionCardView.layer.shadowColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         QuestionCardView.layer.shadowOpacity = 0.5;
         QuestionCardView.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
@@ -210,6 +168,12 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         let swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(handleGesture))
         swipeUp.direction = .up
         self.view.addGestureRecognizer(swipeUp)
+        
+        
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(ViewController.draggedView(_:)))
+        self.view.isUserInteractionEnabled = true
+        self.view.addGestureRecognizer(panGesture)
+
         
         self.activityIndicatorView = NVActivityIndicatorView(frame: self.QuestionCardView.frame, type: .ballTrianglePath, color: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),padding: 50 )
 //        activityIndicatorView.addGestureRecognizer(swipeUp)
@@ -260,7 +224,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         do {
             try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayAndRecord, with: .defaultToSpeaker)
-//            try AVAudioSession.sharedInstance().setInputGain(0.3);
+            try AVAudioSession.sharedInstance().setInputGain(1.0);
             
             try AVAudioSession.sharedInstance().setActive(true)
             AVAudioSession.sharedInstance().requestRecordPermission() { [unowned self] allowed in
@@ -283,7 +247,9 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     
     
     override func viewDidAppear(_ animated: Bool) {
-    
+        
+        print("view did appear view controller")
+        
         self.ref.child("users").child(self.uniqueUserID).child("name").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
             
                 let existence = snapshot.value as? String ?? ""
@@ -292,22 +258,123 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
                 if (existence == "" || snapshot.value == nil ){
                     self.endMatching()
                     self.performSegue(withIdentifier: "goToSettings", sender: self)
-                    self.message.isHidden = true;
                 }
                     
                 else {
-                    self.startMatching()
+                    
+                    if (!self.menuImage.isHidden){
+                        self.startMatching()
+                    }
+                    
+                    self.VideoView.createPreview();
                 }
             
             });
-        
-//
-//
-//        if self.nameOfPerson == self.uniqueUserID {
-//            performSegue(withIdentifier: "goToSettings", sender: self)
-//        }
-//
 
+    }
+    
+    func initFreshSession() {
+        
+        //        self.recordButton.sendActions(for: UIControlEvents.touchUpInside)
+        
+        if (self.nameOfPerson == nil) {
+            let name = UserDefaults.standard.string(forKey: "name") ?? "";
+            
+            if name != "" {
+                self.nameOfPerson = name;
+            }
+            else {
+                self.nameOfPerson = self.uniqueUserID
+            }
+        }
+        
+        self.isA = UserDefaults.standard.integer(forKey: "isA")
+        self.wantsA = UserDefaults.standard.integer(forKey: "wantsA")
+        
+        self.shareNumber.isHidden = true;
+        self.phoneNumberField.isHidden = true;
+        self.PreviewView.isHidden = true;
+        
+        self.connectedSessionID = nil;
+        self.noOneConnectedToMe = true;
+        
+        self.connectedSessionWasRemovedObserver = nil;
+        self.connectedSessionAddedAudioObserver = nil;
+        self.imIFirstOrSecondParticipant = 0;
+        self.numberOfUploadedAudioFiles = 0;
+        self.recordingButtonElapsedPortion = 0;
+        self.timeToNextPerson = self.timeToNextPersonDefault;
+        self.audioRecorder = nil
+        self.otherPersonsPhoneNumber = nil
+        self.resetShareNumber();
+        self.shareNumber.setTitle("Share Number", for: .normal)
+        self.removeBlur();
+        self.stopWaveAnimation();
+        self.hideAllButMenu();
+        self.stopTimer();
+        
+        self.updateActiveCollection()
+        
+        let startingPoint = timerBGView.bounds.origin.x
+        timeElapsedBar.frame = CGRect(x: startingPoint, y: 0, width: timerBGView.bounds.width, height: timerBGView.frame.height);
+        
+    }
+    
+
+    @objc func draggedView(_ sender:UIPanGestureRecognizer){
+        
+//        self.view.bringSubview(toFront: viewDrag)
+//        let translation = sender.translation(in: self.view)
+//        self.view.center = CGPoint(x: self.view.center.x + translation.x, y: self.view.center.y + translation.y)
+//        sender.setTranslation(CGPoint.zero, in: self.view)
+
+        
+        if (sender.state == UIGestureRecognizerState.began) {
+            startLocation = sender.location(in: self.view)
+        }
+        else if (sender.state == UIGestureRecognizerState.ended) {
+            let stopLocation = sender.location(in: self.view)
+            let dx = stopLocation.x - startLocation.x;
+//            let dy = stopLocation.y - startLocation.y;
+            let distance = sqrt(dx*dx);
+            NSLog("Distance: %f", distance);
+            
+            if distance > self.view.frame.width*0.5 {
+                
+                let generator = UIImpactFeedbackGenerator(style: .heavy)
+                generator.impactOccurred()
+                self.disconnectFromSession()
+
+            }
+            
+
+        }
+        
+    }
+
+    
+    func hideAllButMenu(){
+        
+        self.QuestionCardView.layer.isHidden = true;
+        self.timerBGView.isHidden = true;
+        self.waveform.isHidden = true;
+        self.nameLabel.isHidden = true;
+        //        self.recordButton.isHidden = true;
+        
+        if (!self.noOneConnectedToMe){
+            self.shareNumber.isHidden = false;
+        }
+        
+        print ("hide all but menu")
+        if (self.menuImage.isHidden == false){
+            self.message.isHidden = false;
+        }
+        
+        if (!noOneConnectedToMe){
+            self.PreviewView.isHidden = false;
+            self.PreviewView.subviews.first?.isHidden = false;
+        }
+        
     }
     
     @IBOutlet weak var shareNumberBottomConstraint: NSLayoutConstraint!
@@ -326,15 +393,19 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         //Causes the view (or one of its embedded text fields) to resign the first responder status.
         view.endEditing(true)
         
+        resetShareNumber();
+        
+    }
+    
+    func resetShareNumber(){
+        
         UIView.animate(withDuration: 0.1, animations: { () -> Void in
-            self.shareNumberBottomConstraint.constant = 100
+            self.shareNumberBottomConstraint.constant = 30
         })
         
         self.shareNumber.isEnabled = true;
 
-        
     }
-    
     
     func getContacts() -> [String] {
         var storedContacts = [String]()
@@ -370,18 +441,77 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     }
     
     
-    func updateUserProfile() {
+    
+    func updateActiveCollection(){
         
+        users.removeAll(keepingCapacity: true)
+
+        self.ref.child("active").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            
+            if let value = snapshot.value as? NSDictionary{
+                for activeUser in value {
+                    
+                    if activeUser.key as! String == self.uniqueUserID {
+                        continue
+                    }
+                    
+                    let record = activeUser.value as! NSDictionary
+                    
+                    if record["active"] as? String ?? "0" == "1" && activeUser.key != nil{
+                        
+                        self.addEmojiToCollection(userID: activeUser.key as! String)
+                        
+                    }
+                    
+                    
+                    if self.users.count > 10 {
+                        return;
+                    }
+                    
+                }
+            }
+            
+            self.users.insert("", at: 0)
+            
+            print ("active users: ", self.users)
+            self.ActiveCollectionView.reloadData()
+            
+        });
+        
+        
+    }
+    
+    
+    func updateUserProfile() {
         
         print("updating")
         
-        self.ref.child("users").child(self.uniqueUserID).setValue(["name": String(self.nameOfPerson), "isA": self.isA, "wantsA": self.wantsA, "contacts": self.getContacts()])
+        self.emojiCodeWomenCounter %= self.emojiCodeWomen.count
+        self.emojiCodeMenCounter %= self.emojiCodeMen.count
+        
+        let userRef = self.ref.child("users").child(self.uniqueUserID)
+        
+        userRef.child("name").setValue(String(self.nameOfPerson))
+        userRef.child("isA").setValue(self.isA)
+        userRef.child("wantsA").setValue(self.wantsA)
+        userRef.child("contacts").setValue(self.getContacts())
+
+        
+        if self.isA == 1 {
+            userRef.child("emoji").setValue(self.emojiCodeWomen[self.emojiCodeWomenCounter])
+        }
+        else {
+            userRef.child("emoji").setValue(self.emojiCodeMen[self.emojiCodeMenCounter])
+        }
+        
         
         print("finished updating")
 
         UserDefaults.standard.set(self.nameOfPerson, forKey: "name")
         UserDefaults.standard.set(self.isA, forKey: "isA")
         UserDefaults.standard.set(self.wantsA, forKey: "wantsA")
+        UserDefaults.standard.set(self.emojiCodeMenCounter, forKey: "emojiCodeMenCounter")
+        UserDefaults.standard.set(self.emojiCodeWomenCounter, forKey: "emojiCodeWomenCounter")
 
     }
     
@@ -396,15 +526,17 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         else if gesture.direction == UISwipeGestureRecognizerDirection.left {
             print("Swipe Left")
             
-            let generator = UIImpactFeedbackGenerator(style: .heavy)
-            generator.impactOccurred()
+//            let generator = UIImpactFeedbackGenerator(style: .heavy)
+//            generator.impactOccurred()
 
-            self.disconnectFromSession()
+//            self.disconnectFromSession()
         }
             
         else if gesture.direction == UISwipeGestureRecognizerDirection.up {
             print("Swipe Up")
             
+            performSegue(withIdentifier: "goToSettings", sender: self)
+
 //            performSegue(withIdentifier: "showMessages", sender: self)
 
         }
@@ -412,7 +544,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         else if gesture.direction == UISwipeGestureRecognizerDirection.down {
             print("Swipe Down")
             
-            performSegue(withIdentifier: "goToSettings", sender: self)
         }
         
     }
@@ -443,11 +574,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         if !self.menuImage.isHidden {
             self.startMatching()
         }
-        
-        
-
-
-
         
     }
     
@@ -500,14 +626,17 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     }
     
     
-    func submitPhoneNumberToSession(phoneNumber: String){
+    func submitPhoneNumberToSession(phoneNumber: String) {
  
         let sessionRef =  self.ref.child("sessions").child(self.connectedSessionID)
         sessionRef.child("phoneNumber"+String(self.imIFirstOrSecondParticipant)).setValue(phoneNumber)
-
         
-        self.shareNumber.setTitle("Waiting for " + self.nameLabel.text!.replacingOccurrences(of: ":", with:"")   , for: .normal)
-        
+        if (self.otherPersonsPhoneNumber == nil){
+            self.shareNumber.setTitle("Waiting for " + self.nameLabel.text!.replacingOccurrences(of: ":", with:"")   , for: .normal)
+        }
+        else {
+            self.shareNumber.setTitle("Open in IMessage" , for: .normal)
+        }
         
         self.phoneNumberField.text = "";
         self.phoneNumberField.isHidden = true;
@@ -517,19 +646,17 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
 
     func textOtherPerson(){
         
-        
         let selfRef = self.ref.child("sessions").child(self.connectedSessionID);
-        
         selfRef.child("openedInIMessage").setValue("1")
-
         
         let phoneNumber = self.otherPersonsPhoneNumber
-        let text = "Here's " + self.nameLabel.text!.replacingOccurrences(of: ":", with: "") + " number, good luck!"
-        
-
+        let text = "Here's " + self.nameLabel.text!.replacingOccurrences(of: ":", with: "").trim() + "'s number, good luck!"
         
         let sms: String = "sms:"+phoneNumber!+"&body="+text
         let strURL: String = sms.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+        
+        self.resetShareNumber();
+
         UIApplication.shared.open(URL.init(string: strURL)!, options: [:], completionHandler: nil)
         
     }
@@ -604,15 +731,24 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     
     @objc func startMatching() {
         
+        
         print ("startMatching")
         print ("name is ", self.nameOfPerson)
 
-
         self.menuImage.alpha = 0;
+//        self.PreviewView.alpha = 0;
+        self.message.alpha = 0;
+        self.ActiveCollectionView.isHidden = false;
 
         UIView.animate(withDuration: 1, delay: 0.0, options: [.curveEaseOut], animations: {
             self.menuImage.alpha = 1;
             self.menuImage.isHidden = false;
+            
+//            self.PreviewView.alpha = 1;
+//            self.PreviewView.isHidden = false;
+
+            self.message.alpha = 1;
+            print ("unhide from startMatching()")
             self.message.isHidden = false;
 
         }, completion: nil)
@@ -628,11 +764,14 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         self.queueTimer_.start()
 
-
     }
     
     
     @objc func endMatching(){
+        
+        self.message.isHidden = true;
+        self.PreviewView.isHidden = true;
+        self.ActiveCollectionView.isHidden = true;
         
         if (self.queueTimer_ != nil){
             self.queueTimer_.pause();
@@ -662,6 +801,11 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
                 }
 
                 self.ref.child("active").child(self.uniqueUserID).child("timestamp").setValue(self.date())
+                
+                self.ref.child("active").child(self.uniqueUserID).child("isA").setValue(self.isA)
+                
+                self.ref.child("active").child(self.uniqueUserID).child("wantsA").setValue(self.wantsA)
+                
                 
             }
         });
@@ -721,6 +865,8 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         if self.activityIndicatorView.isAnimating { return }
         self.activityIndicatorView.startAnimating()
+        print ("unhide from showLoadingAnimation()")
+
        self.message.isHidden = false;
 
     }
@@ -742,6 +888,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         print ("\n\n connected to session", sessionID)
 
+        
         self.noOneConnectedToMe = false;
         
         VideoView.connectOrCreateRoom(roomName: sessionID)
@@ -796,20 +943,41 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
             if (key == "phoneNumber1" && 1 != self.imIFirstOrSecondParticipant) {
                 
                 self.otherPersonsPhoneNumber = value;
-                self.shareNumber.setTitle("Open in IMessage", for: .normal)
+                
+                if (self.shareNumber.titleLabel?.text == "Waiting for " + self.nameLabel.text!.replacingOccurrences(of: ":", with:"") ){
+                    self.shareNumber.setTitle("Open in IMessage", for: .normal)
+                }
                 
             }
             
             if (key == "phoneNumber2" && 2 != self.imIFirstOrSecondParticipant) {
                 
                 self.otherPersonsPhoneNumber = value;
-                self.shareNumber.setTitle("Open in IMessage", for: .normal)
 
+                if (self.shareNumber.titleLabel?.text == "Waiting for " + self.nameLabel.text!.replacingOccurrences(of: ":", with:"") ){
+                    self.shareNumber.setTitle("Open in IMessage", for: .normal)
+                }
+                
             }
             
             
-            if (key == "openedInIMessage"){
-                self.textOtherPerson();
+            if (key == "openedInIMessage") {
+                
+                var val = "1";
+                
+                if self.imIFirstOrSecondParticipant == 1 {
+                    val = "2";
+                }
+                
+            sessionRef.child("phoneNumber"+val).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+                
+                    self.otherPersonsPhoneNumber = (snapshot.value as? String ?? "")
+                    print(val, " texting ", self.otherPersonsPhoneNumber)
+                    self.textOtherPerson();
+
+            });
+
+                
             }
             
             
@@ -817,6 +985,9 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
                 
                 self.ref.child("users").child(value).child("name").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                     self.nameLabel.text = (snapshot.value as? String ?? "") + ": "
+
+                    self.setCurrentEmoji(userID: value)
+                    
                 });
                 
                 self.imIFirstOrSecondParticipant = 1
@@ -832,14 +1003,48 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
             
             if (key == "p1-ID" && value != self.uniqueUserID) {
                 
-                self.ref.child("users").child(value).child("name").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            self.ref.child("users").child(value).child("name").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                     self.nameLabel.text = (snapshot.value as? String ?? "") + ": "
+                
+                
+                self.setCurrentEmoji(userID: value);
                 });
                 
             }
             
         });
         
+        
+    }
+    
+    
+    func setCurrentEmoji(userID: String){
+        
+        self.ref.child("users").child(userID).child("emoji").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            
+            
+            if let inList = self.users.index(of: (snapshot.value as? String ?? "")) {
+                if inList > 0 && inList < self.users.count {
+                    self.users.remove(at: inList)
+                }
+            }
+
+            self.users[0] = (snapshot.value as? String ?? "")
+            
+            self.ActiveCollectionView.reloadData()
+            
+        });
+        
+    }
+    
+    func addEmojiToCollection(userID: String) {
+        
+        self.ref.child("users").child(userID).child("emoji").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            
+            self.users.append((snapshot.value as? String ?? ""))
+            self.ActiveCollectionView.reloadData()
+            
+        });
         
     }
     
@@ -855,6 +1060,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         self.startWaveAnimation();
         
 //        self.recordButton.isHidden = false;
+        self.ActiveCollectionView.isHidden = true;
         
         self.startTimer();
         
@@ -867,21 +1073,26 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
 
         print ("\n\n\n disconnecting!!!!!\n\n " , noOneConnectedToMe )
         
-        
+        self.PreviewView.isHidden = true;
+        self.PreviewView.subviews.first?.isHidden = true;
+
         if (self.connectedSessionID != nil) {
-            self.ref.child("sessions").child(self.connectedSessionID).removeValue()
+//            self.ref.child("sessions").child(self.connectedSessionID).removeValue()
             self.connectedSessionID = nil
         }
         
         self.VideoView.disconnect()
         self.initFreshSession()
 
-        self.ref.child("active").child(self.uniqueUserID).child("active").setValue("0"){ (error, ref) -> Void in
-
-        }
+        self.setActiveToOff()
         
     }
     
+    func setActiveToOff(){
+        self.ref.child("active").child(self.uniqueUserID).child("active").setValue("0"){ (error, ref) -> Void in
+            
+        }
+    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

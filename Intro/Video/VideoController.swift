@@ -22,6 +22,7 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
     var remoteView: TVIVideoView?
     var didConnectToRoom: Bool = false;
     var parentView: ViewController!;
+    var previewIsSet: Bool = false;
     
     lazy var functions = Functions.functions()
 
@@ -33,11 +34,11 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
         
         if let camera = TVICameraCapturer(source: .frontCamera){
             self.localVideoTrack = TVILocalVideoTrack(capturer: camera)
+            
         }
         
         self.localAudioTrack = TVILocalAudioTrack.init(options: nil, enabled: true, name: "Microphone")
 
-        
         
         Alamofire.request("https://us-central1-intro-69d9e.cloudfunctions.net/tokenGenerator", parameters: ["userID": uniqueUserID])
             
@@ -94,24 +95,23 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
         room = TwilioVideo.connect(with: connectOptions, delegate: self)
 
         
-//        if let camera = TVICameraCapturer(source: .frontCamera),
-//            let videoTrack = TVILocalVideoTrack(capturer: camera) {
-//            
-//            // TVIVideoView is a TVIVideoRenderer and can be added to any TVIVideoTrack.
-//            let renderer = TVIVideoView(frame: self.parentView.PreviewView.bounds)
-//            
-//            // Add renderer to the video track
-//            videoTrack.addRenderer(renderer)
-//            
-//            self.localVideoTrack = videoTrack
-//            self.camera = camera
-//            self.parentView.PreviewView.addSubview(renderer)
-//            
-//        } else {
-//            print("Couldn't create TVICameraCapturer or TVILocalVideoTrack")
-//        }
         
+    }
+    
+    func createPreview(){
         
+            let renderer = TVIVideoView(frame: self.parentView.PreviewView.bounds)
+            renderer.isHidden = true;
+            renderer.shouldMirror = true;
+//            self.parentView.PreviewView.isHidden = false;
+            renderer.layer.cornerRadius = 5;
+            renderer.layer.shadowColor = #colorLiteral(red: 0.1607843137, green: 0.168627451, blue: 0.1607843137, alpha: 1)
+            renderer.layer.shadowOpacity = 0.5;
+            renderer.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
+            
+            self.localVideoTrack?.addRenderer(renderer)
+            self.parentView.PreviewView.addSubview(renderer)
+
     }
     
     func disconnect(){

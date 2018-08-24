@@ -7,8 +7,8 @@
 //
 
 import UIKit
-import Hero
 import BetterSegmentedControl
+import Firebase
 
 class InformationOneController: UIViewController, UITextFieldDelegate {
     
@@ -19,6 +19,9 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var nameField: UITextField!
     
+    
+    var ref: DatabaseReference!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -35,29 +38,22 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         self.isA.titleFont =  UIFont(name: fontName, size: fontSize)!
         self.isA.selectedTitleFont =  UIFont(name: fontName, size: fontSize)!
         self.isA.titles = ["👨", "👩"]
-
         
         self.wantsA.titleFont =  UIFont(name: fontName, size: fontSize)!
         self.wantsA.selectedTitleFont =  UIFont(name: fontName, size: fontSize)!
         self.wantsA.titles = ["👨", "👩"]
-
+        
         
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        
-        
+        tap.cancelsTouchesInView = false;
         view.addGestureRecognizer(tap)
         
+        let tapGenderIsA: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.changeEmojiIsA) )
         
-        do {
-            try self.isA.setIndex(UInt(UserDefaults.standard.integer(forKey: "isA") ))
-            try self.wantsA.setIndex(UInt(UserDefaults.standard.integer(forKey: "wantsA") ))
-        }
-        catch{
-            print("")
-        }
         
-//        self.wantsA.setIndex(UserDefaults.standard.string(forKey: "wantsA") ?? 0)
-
+        
+        tapGenderIsA.cancelsTouchesInView = false;
+        self.isA.addGestureRecognizer(tapGenderIsA)
         
     }
     
@@ -99,6 +95,54 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
     }
     
     
+    
+    @objc func changeEmojiIsA(gestureRecognizer: UITapGestureRecognizer) {
+        
+        
+        let mainViewController = presentingViewController as! ViewController
+
+        
+        if gestureRecognizer.state == UIGestureRecognizerState.recognized {
+            
+            let loc = gestureRecognizer.location(in: self.isA.inputView)
+            print(loc)
+            print(self.isA.center)
+
+            if loc.x > self.isA.center.x && self.isA.index == 0 {
+                try? self.isA.setIndex(1)
+                self.isA.titles[0]=mainViewController.emojiCodeMen[0]
+                return;
+            }
+            else if loc.x < self.isA.center.x && self.isA.index == 1 {
+                try? self.isA.setIndex(0)
+                self.isA.titles[1]=mainViewController.emojiCodeWomen[0]
+                return;
+            }
+
+        }
+
+        
+
+        if Int(self.isA.index) == 0 {
+            let index = ((mainViewController.emojiCodeMenCounter)+1)%(mainViewController.emojiCodeMen.count)
+            self.isA.titles[0]=mainViewController.emojiCodeMen[index]
+            self.isA.titles[1]=mainViewController.emojiCodeWomen[0]
+            mainViewController.emojiCodeMenCounter+=1;
+        }
+        
+        else if Int(self.isA.index) == 1 {
+            let index = ((mainViewController.emojiCodeWomenCounter)+1)%(mainViewController.emojiCodeWomen.count)
+            self.isA.titles[1]=mainViewController.emojiCodeWomen[index]
+            self.isA.titles[0]=mainViewController.emojiCodeMen[0]
+            mainViewController.emojiCodeWomenCounter+=1;
+        }
+        
+        print("change!")
+    }
+    
+    
+    
+    
     @IBAction func pressed(_ sender: Any) {
         
         if ((self.nameField.text?.trim().count)! <= 1){
@@ -113,7 +157,6 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
             mainViewController?.nameOfPerson = self.nameField.text?.trim()
             mainViewController?.isA = Int(self.isA.index)
             mainViewController?.wantsA = Int(self.wantsA.index)
-
 
             mainViewController?.menuImage.alpha = 0;
 
@@ -137,6 +180,55 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         image.addGestureRecognizer(tap)
         image.isUserInteractionEnabled = true
         image.layer.borderColor = #colorLiteral(red: 0.5058823529, green: 0.9450980392, blue: 0.6588235294, alpha: 1)
+    }
+    
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        let mainViewController = presentingViewController as! ViewController
+
+        mainViewController.endMatching()
+        mainViewController.hideLoadingAnimation()
+
+        self.ref = Database.database().reference()
+        self.ref.child("users").child(mainViewController.uniqueUserID).child("emoji").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            
+            let existence = snapshot.value as? String ?? ""
+            print("existence", existence)
+            
+            if (existence == "" || snapshot.value == nil ){
+
+            }
+                
+            else {
+                if UInt(UserDefaults.standard.integer(forKey: "isA") ) == 0 {
+                    self.isA.titles[0] = existence
+                }
+                else {
+                    self.isA.titles[1] = existence
+                }
+                
+            }
+            
+        });
+        
+
+        
+        
+        do {
+            
+            try self.isA.setIndex(UInt(UserDefaults.standard.integer(forKey: "isA") ))
+//            self.isA.titles[0] = mainViewController.emojiCodeMen[UserDefaults.standard.integer(forKey: "emojiCodeMenCounter")%mainViewController.emojiCodeMen.count]
+
+            try self.wantsA.setIndex(UInt(UserDefaults.standard.integer(forKey: "wantsA") ))
+//            try self.isA.titles[1] = mainViewController.emojiCodeWomen[UserDefaults.standard.integer(forKey: "emojiCodeWomenCounter")%mainViewController.emojiCodeWomen.count]
+            
+        }
+            
+        catch{
+            print("")
+        }
+        
     }
     
 }

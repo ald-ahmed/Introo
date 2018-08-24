@@ -26,6 +26,7 @@
 		B9CD1A1520EEB041004EC0BC /* TimersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CD1A1420EEB041004EC0BC /* TimersController.swift */; };
 		B9CD1A1720EEF602004EC0BC /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CD1A1620EEF602004EC0BC /* MessagesController.swift */; };
 		B9CD1A1920EFFACA004EC0BC /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CD1A1820EFFACA004EC0BC /* Util.swift */; };
+		B9F2AA88212E56740041B70B /* ActiveCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2AA87212E56740041B70B /* ActiveCollectionView.swift */; };
 		C8ADCE91BA1D69CB2565A80F /* Pods_IntroUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7F5D9D416288AB8E764044F /* Pods_IntroUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -77,6 +78,7 @@
 		B9CD1A1420EEB041004EC0BC /* TimersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimersController.swift; sourceTree = "<group>"; };
 		B9CD1A1620EEF602004EC0BC /* MessagesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesController.swift; sourceTree = "<group>"; };
 		B9CD1A1820EFFACA004EC0BC /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
+		B9F2AA87212E56740041B70B /* ActiveCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveCollectionView.swift; sourceTree = "<group>"; };
 		C7F5D9D416288AB8E764044F /* Pods_IntroUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IntroUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D518DE456C68DA1D5DDC71E7 /* Pods-Intro.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Intro.release.xcconfig"; path = "Pods/Target Support Files/Pods-Intro/Pods-Intro.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -145,6 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				B9A48DB220CC50C0000CBD9C /* VideoController.swift */,
+				B9F2AA87212E56740041B70B /* ActiveCollectionView.swift */,
 			);
 			path = Video;
 			sourceTree = "<group>";
@@ -461,7 +464,6 @@
 				"${BUILT_PRODUCTS_DIR}/BetterSegmentedControl/BetterSegmentedControl.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
-				"${BUILT_PRODUCTS_DIR}/Hero/Hero.framework",
 				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/Pastel/Pastel.framework",
 				"${BUILT_PRODUCTS_DIR}/PhoneNumberKit/PhoneNumberKit.framework",
@@ -479,7 +481,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BetterSegmentedControl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Hero.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Pastel.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PhoneNumberKit.framework",
@@ -507,6 +508,7 @@
 				B9CD1A1520EEB041004EC0BC /* TimersController.swift in Sources */,
 				B95F448D2127AF6D008864C2 /* OnboardingController.swift in Sources */,
 				B9003D8320E80C2A00AC79CB /* AudioRecorder.swift in Sources */,
+				B9F2AA88212E56740041B70B /* ActiveCollectionView.swift in Sources */,
 				B9A48DB320CC50C0000CBD9C /* VideoController.swift in Sources */,
 				B924A4E620BF662300022264 /* AppDelegate.swift in Sources */,
 				B9A48DB520CC55E4000CBD9C /* LocationController.swift in Sources */,
