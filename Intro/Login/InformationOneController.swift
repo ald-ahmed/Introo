@@ -20,6 +20,8 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var nameField: UITextField!
     
     
+    @IBOutlet weak var scrollView: UIScrollView!
+    
     var ref: DatabaseReference!
 
     override func viewDidLoad() {
@@ -44,13 +46,16 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         self.wantsA.titles = ["👨", "👩"]
         
         
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.keyboardWasShown(notification:)),
+                                               name: NSNotification.Name.UIKeyboardWillChangeFrame,
+                                               object: nil)
+        
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false;
         view.addGestureRecognizer(tap)
         
         let tapGenderIsA: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.changeEmojiIsA) )
-        
-        
         
         tapGenderIsA.cancelsTouchesInView = false;
         self.isA.addGestureRecognizer(tapGenderIsA)
@@ -59,16 +64,14 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        if let mainViewController = segue.destination as? ViewController {
-            mainViewController.nameOfPerson = nameField.text?.trim()
-            mainViewController.updateUserProfile();
-        }
-    }
-    
-    @IBAction func textChanged(_ sender: Any) {
+//        if let mainViewController = segue.destination as? ViewController {
+//
+//        }
         
     }
     
+    
+
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""
         guard let stringRange = Range(range, in: currentText) else { return false }
@@ -88,10 +91,14 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
     }
 
     
-    //Calls this function when the tap is recognized.
     @objc func dismissKeyboard() {
-        //Causes the view (or one of its embedded text fields) to resign the first responder status.
+
         view.endEditing(true)
+        
+        self.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
+
+//        self.phoneNumberConstraint.constant = 100;
+        
     }
     
     
@@ -101,7 +108,6 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         
         let mainViewController = presentingViewController as! ViewController
 
-        
         if gestureRecognizer.state == UIGestureRecognizerState.recognized {
             
             let loc = gestureRecognizer.location(in: self.isA.inputView)
@@ -167,6 +173,11 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
 
             }, completion: nil)
 
+
+            mainViewController?.emojiCodeMenCounter = mainViewController?.emojiCodeMen.index(of: self.isA.titles[0]) ?? 0
+            
+            mainViewController?.emojiCodeWomenCounter = mainViewController?.emojiCodeWomen.index(of: self.isA.titles[1]) ?? 0
+            
             mainViewController?.updateUserProfile()
             mainViewController?.startMatching()
         }
@@ -207,7 +218,7 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
                 else {
                     self.isA.titles[1] = existence
                 }
-                
+
             }
             
         });
@@ -218,10 +229,7 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         do {
             
             try self.isA.setIndex(UInt(UserDefaults.standard.integer(forKey: "isA") ))
-//            self.isA.titles[0] = mainViewController.emojiCodeMen[UserDefaults.standard.integer(forKey: "emojiCodeMenCounter")%mainViewController.emojiCodeMen.count]
-
             try self.wantsA.setIndex(UInt(UserDefaults.standard.integer(forKey: "wantsA") ))
-//            try self.isA.titles[1] = mainViewController.emojiCodeWomen[UserDefaults.standard.integer(forKey: "emojiCodeWomenCounter")%mainViewController.emojiCodeWomen.count]
             
         }
             
@@ -230,6 +238,21 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         }
         
     }
+    
+    
+    
+    
+    
+    
+    @objc func keyboardWasShown(notification: NSNotification) {
+        
+        let info = notification.userInfo!
+        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        
+        self.scrollView.setContentOffset(CGPoint(x: 0, y: keyboardFrame.size.height+30), animated: true)
+        
+    }
+    
     
 }
 

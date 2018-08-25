@@ -10,6 +10,7 @@ import UIKit
 import TwilioVideo
 import FirebaseFunctions
 import Alamofire
+import SAConfettiView
 
 class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate, TVIRoomDelegate {
     
@@ -174,6 +175,7 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
         
         self.addSubview(self.remoteView!)
         
+
     }
 
     
@@ -217,6 +219,11 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
         blurEffectView.tag = 100
         self.addSubview(blurEffectView)
         
+        let confettiView = SAConfettiView(frame: self.bounds)
+        self.addSubview(confettiView)
+        
+        confettiView.startConfetti()
+
         
         self.parentView.readyToConversate();
         // This method is called just once. Make the view visible or animate a transition onscreen here.

@@ -25,6 +25,7 @@ pod 'FirebaseFunctions'
     pod 'Alamofire', '~> 4.7'
 pod 'NVActivityIndicatorView'
 pod 'AnimatedCollectionViewLayout'
+pod "SAConfettiView"
 
 
 pod 'AudioKit', '~> 4.0'

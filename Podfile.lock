@@ -53,6 +53,7 @@ PODS:
     - PhoneNumberKit/PhoneNumberKitCore
   - RecordButton (1.0.2)
   - Repeat (0.5.4)
+  - SAConfettiView (0.1.8)
   - SwiftSiriWaveformView (2.4.0)
   - TwilioVideo (2.1.0)
 
@@ -72,6 +73,7 @@ DEPENDENCIES:
   - PhoneNumberKit
   - RecordButton
   - Repeat
+  - SAConfettiView
   - SwiftSiriWaveformView
   - TwilioVideo (~> 2.0)
 
@@ -98,6 +100,7 @@ SPEC REPOS:
     - PhoneNumberKit
     - RecordButton
     - Repeat
+    - SAConfettiView
     - SwiftSiriWaveformView
     - TwilioVideo
 
@@ -123,9 +126,10 @@ SPEC CHECKSUMS:
   PhoneNumberKit: 62003f40ff75315fd3738286558bc365365ac222
   RecordButton: 76677be0f4b94f8a387454a23b4b64bd9b6c0e51
   Repeat: 6e9ea5147b87470c9ceb4b8b090e3be301dd3461
+  SAConfettiView: c87031a2280659261b730fce3669fb10e73636ee
   SwiftSiriWaveformView: baa04ed2089e854af00ea54c38a7700ca43d7ae0
   TwilioVideo: f5452d597caaa2cdf2cd588e4e93493688edaf23
 
-PODFILE CHECKSUM: 98b884ec3d79773eccc6bcb1d27dd0c1301c3872
+PODFILE CHECKSUM: 22dc8211b9b4784d48bf5180e9332400eb47d7d5
 
 COCOAPODS: 1.5.3

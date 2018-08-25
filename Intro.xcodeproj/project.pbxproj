@@ -26,6 +26,8 @@
 		B9CD1A1520EEB041004EC0BC /* TimersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CD1A1420EEB041004EC0BC /* TimersController.swift */; };
 		B9CD1A1720EEF602004EC0BC /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CD1A1620EEF602004EC0BC /* MessagesController.swift */; };
 		B9CD1A1920EFFACA004EC0BC /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CD1A1820EFFACA004EC0BC /* Util.swift */; };
+		B9E7B10821318D9A0082B4A6 /* Keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = B9E7B10721318D9A0082B4A6 /* Keys.plist */; };
+		B9E7B10A21318E0B0082B4A6 /* Vertify.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E7B10921318E0B0082B4A6 /* Vertify.swift */; };
 		B9F2AA88212E56740041B70B /* ActiveCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F2AA87212E56740041B70B /* ActiveCollectionView.swift */; };
 		C8ADCE91BA1D69CB2565A80F /* Pods_IntroUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7F5D9D416288AB8E764044F /* Pods_IntroUITests.framework */; };
 /* End PBXBuildFile section */
@@ -78,6 +80,8 @@
 		B9CD1A1420EEB041004EC0BC /* TimersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimersController.swift; sourceTree = "<group>"; };
 		B9CD1A1620EEF602004EC0BC /* MessagesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesController.swift; sourceTree = "<group>"; };
 		B9CD1A1820EFFACA004EC0BC /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
+		B9E7B10721318D9A0082B4A6 /* Keys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Keys.plist; sourceTree = "<group>"; };
+		B9E7B10921318E0B0082B4A6 /* Vertify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vertify.swift; sourceTree = "<group>"; };
 		B9F2AA87212E56740041B70B /* ActiveCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveCollectionView.swift; sourceTree = "<group>"; };
 		C7F5D9D416288AB8E764044F /* Pods_IntroUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IntroUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D518DE456C68DA1D5DDC71E7 /* Pods-Intro.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Intro.release.xcconfig"; path = "Pods/Target Support Files/Pods-Intro/Pods-Intro.release.xcconfig"; sourceTree = "<group>"; };
@@ -139,6 +143,7 @@
 			children = (
 				B970E83920CE60B2002449BA /* InformationOneController.swift */,
 				B95F448C2127AF6D008864C2 /* OnboardingController.swift */,
+				B9E7B10921318E0B0082B4A6 /* Vertify.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -216,6 +221,7 @@
 				B9CD1A1320EEB01E004EC0BC /* Timers */,
 				B9003D8420E80C2D00AC79CB /* Audio */,
 				B9CD1A1B20EFFC23004EC0BC /* Messages */,
+				B9E7B10721318D9A0082B4A6 /* Keys.plist */,
 			);
 			path = Intro;
 			sourceTree = "<group>";
@@ -379,6 +385,7 @@
 				B924A4ED20BF662600022264 /* Assets.xcassets in Resources */,
 				B924A4EB20BF662300022264 /* Main.storyboard in Resources */,
 				B9A48DB720CC58B4000CBD9C /* GoogleService-Info.plist in Resources */,
+				B9E7B10821318D9A0082B4A6 /* Keys.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,6 +468,7 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Intro/Pods-Intro-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/AnimatedCollectionViewLayout/AnimatedCollectionViewLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/BetterSegmentedControl/BetterSegmentedControl.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
@@ -469,6 +477,7 @@
 				"${BUILT_PRODUCTS_DIR}/PhoneNumberKit/PhoneNumberKit.framework",
 				"${BUILT_PRODUCTS_DIR}/RecordButton/RecordButton.framework",
 				"${BUILT_PRODUCTS_DIR}/Repeat/Repeat.framework",
+				"${BUILT_PRODUCTS_DIR}/SAConfettiView/SAConfettiView.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftSiriWaveformView/SwiftSiriWaveformView.framework",
 				"${PODS_ROOT}/TwilioVideo/Build/iOS/TwilioVideo.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
@@ -478,6 +487,7 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AnimatedCollectionViewLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BetterSegmentedControl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
@@ -486,6 +496,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PhoneNumberKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RecordButton.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Repeat.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAConfettiView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSiriWaveformView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwilioVideo.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
@@ -515,6 +526,7 @@
 				B9003D8020E809AB00AC79CB /* UserModel.swift in Sources */,
 				B9CD1A1920EFFACA004EC0BC /* Util.swift in Sources */,
 				B970E83A20CE60B2002449BA /* InformationOneController.swift in Sources */,
+				B9E7B10A21318E0B0082B4A6 /* Vertify.swift in Sources */,
 				B9CD1A1720EEF602004EC0BC /* MessagesController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

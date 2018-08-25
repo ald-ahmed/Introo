@@ -25,7 +25,6 @@ import Repeat
 import PhoneNumberKit
 import AnimatedCollectionViewLayout
 
-
 class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndicatorViewable, UICollectionViewDelegate, UICollectionViewDataSource {
     
     
@@ -108,14 +107,15 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     var emojiCodeMenCounter = 0;
  
     var startLocation: CGPoint!
-
+    
+    var count = 0;
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
         
         UIApplication.shared.isIdleTimerDisabled = true
-
+        
         self.ActiveCollectionView.delegate = self;
         self.ActiveCollectionView.dataSource = self;
 
@@ -240,9 +240,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
             // failed to record!
         }
         
-        
-        
- 
     }
     
     
@@ -250,6 +247,11 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         print("view did appear view controller")
         
+        if count==0 {
+            self.performSegue(withIdentifier: "goToSettings", sender: self)
+            count = 1
+        }
+
         self.ref.child("users").child(self.uniqueUserID).child("name").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
             
                 let existence = snapshot.value as? String ?? ""
@@ -321,32 +323,62 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     }
     
 
+    @IBOutlet weak var widthOfSlider: NSLayoutConstraint!
+    
+    func animateSkipSlider(width: CGFloat){
+        
+        UIView.animate(withDuration: 1, delay: 0.3, options: [.curveEaseOut], animations: {
+            
+            self.widthOfSlider.constant = width
+
+        }, completion: { (finished: Bool) in
+
+        })
+        
+    }
+    
+    
     @objc func draggedView(_ sender:UIPanGestureRecognizer){
         
 //        self.view.bringSubview(toFront: viewDrag)
 //        let translation = sender.translation(in: self.view)
 //        self.view.center = CGPoint(x: self.view.center.x + translation.x, y: self.view.center.y + translation.y)
 //        sender.setTranslation(CGPoint.zero, in: self.view)
+        
+        let thres = self.view.frame.width*0.5
+        
+        if (startLocation != nil) {
+            let stopLocation = sender.location(in: self.view)
+            let dist = startLocation.x - stopLocation.x;
+            
+            if dist <= 0 {
+                self.animateSkipSlider(width: 0)
+            }
+            else {
+                self.animateSkipSlider(width: self.view.frame.width*(dist/thres) )
+            }
 
+        }
         
         if (sender.state == UIGestureRecognizerState.began) {
             startLocation = sender.location(in: self.view)
         }
+            
         else if (sender.state == UIGestureRecognizerState.ended) {
             let stopLocation = sender.location(in: self.view)
-            let dx = stopLocation.x - startLocation.x;
-//            let dy = stopLocation.y - startLocation.y;
-            let distance = sqrt(dx*dx);
+            let dx = startLocation.x - stopLocation.x;
+            let distance = dx;
             NSLog("Distance: %f", distance);
             
-            if distance > self.view.frame.width*0.5 {
+            if distance > thres {
                 
                 let generator = UIImpactFeedbackGenerator(style: .heavy)
                 generator.impactOccurred()
                 self.disconnectFromSession()
-
+                
             }
             
+            self.animateSkipSlider(width: 0)
 
         }
         
@@ -400,7 +432,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     func resetShareNumber(){
         
         UIView.animate(withDuration: 0.1, animations: { () -> Void in
-            self.shareNumberBottomConstraint.constant = 30
+            self.shareNumberBottomConstraint.constant = 40
         })
         
         self.shareNumber.isEnabled = true;
@@ -425,7 +457,8 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
                 for phoneNumber in contact.phoneNumbers {
                     if let number = phoneNumber.value as? CNPhoneNumber, let label = phoneNumber.label {
                         let localizedLabel = CNLabeledValue<CNPhoneNumber>.localizedString(forLabel: label)
-                        print("\(contact.givenName) \(contact.familyName) tel:\(localizedLabel) -- \(number.stringValue), email: \(contact.emailAddresses)")
+                        
+//                        print("\(contact.givenName) \(contact.familyName) tel:\(localizedLabel) -- \(number.stringValue), email: \(contact.emailAddresses)")
                         
                         storedContacts.append(number.stringValue)
                         
@@ -486,11 +519,13 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         print("updating")
         
-        self.emojiCodeWomenCounter %= self.emojiCodeWomen.count
+        print ("before index is ", self.emojiCodeMenCounter)
         self.emojiCodeMenCounter %= self.emojiCodeMen.count
+        self.emojiCodeWomenCounter %= self.emojiCodeWomen.count
+        print ("after index is ", self.emojiCodeMenCounter)
+
         
         let userRef = self.ref.child("users").child(self.uniqueUserID)
-        
         userRef.child("name").setValue(String(self.nameOfPerson))
         userRef.child("isA").setValue(self.isA)
         userRef.child("wantsA").setValue(self.wantsA)
@@ -512,6 +547,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         UserDefaults.standard.set(self.wantsA, forKey: "wantsA")
         UserDefaults.standard.set(self.emojiCodeMenCounter, forKey: "emojiCodeMenCounter")
         UserDefaults.standard.set(self.emojiCodeWomenCounter, forKey: "emojiCodeWomenCounter")
+        
 
     }
     
@@ -606,6 +642,10 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     
     func checkNumber(text: String) -> String{
         
+        if (text.trim().count < 6){
+            return "error"
+        }
+        
         do {
             let phoneNumber = try PhoneNumberKit().parse(text)
             return phoneNumber.adjustedNationalNumber()
@@ -681,7 +721,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         }
         
         
-        if (self.phoneNumberField.isHidden == false && checkNumber(text: self.phoneNumberField.text!) != "error"){
+        if (self.phoneNumberField.isHidden == false && checkNumber(text: self.phoneNumberField.text!) != "error") {
             
             self.updatePhoneNumber(phoneNumber: self.checkNumber(text: self.phoneNumberField.text!))
             self.submitPhoneNumberToSession(phoneNumber: self.checkNumber(text: self.phoneNumberField.text!))
