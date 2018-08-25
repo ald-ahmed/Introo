@@ -211,23 +211,33 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
     
     func videoViewDidReceiveData(_ view: TVIVideoView) {
         
+        if let foundView = self.viewWithTag(0xDEADBEEF) {
+            foundView.removeFromSuperview()
+        }
+        
         let blurEffect = UIBlurEffect(style: .dark)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         //always fill the view
         blurEffectView.frame = self.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        blurEffectView.tag = 100
+        blurEffectView.tag = 0xDEADBEEF
         self.addSubview(blurEffectView)
         
-        let confettiView = SAConfettiView(frame: self.bounds)
-        self.addSubview(confettiView)
-        
-        confettiView.startConfetti()
-
+        addConfetti()
         
         self.parentView.readyToConversate();
         // This method is called just once. Make the view visible or animate a transition onscreen here.
         view.isHidden = false
+    }
+    
+    
+    func addConfetti() {
+        let confettiView = SAConfettiView(frame: self.bounds)
+        confettiView.type = .Image("😍".image() as! UIImage)
+        confettiView.colors = [UIColor.white]
+
+        self.addSubview(confettiView)
+        confettiView.startConfetti()
     }
 
     

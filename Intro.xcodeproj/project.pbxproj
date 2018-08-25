@@ -18,6 +18,7 @@
 		B924A4F020BF662600022264 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B924A4EE20BF662600022264 /* LaunchScreen.storyboard */; };
 		B924A4FB20BF662600022264 /* IntroTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B924A4FA20BF662600022264 /* IntroTests.swift */; };
 		B924A50620BF662600022264 /* IntroUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B924A50520BF662600022264 /* IntroUITests.swift */; };
+		B92C07172131CF2C0093B818 /* HeartEyes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B92C07162131CF2C0093B818 /* HeartEyes.swift */; };
 		B95F448D2127AF6D008864C2 /* OnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95F448C2127AF6D008864C2 /* OnboardingController.swift */; };
 		B970E83A20CE60B2002449BA /* InformationOneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B970E83920CE60B2002449BA /* InformationOneController.swift */; };
 		B9A48DB320CC50C0000CBD9C /* VideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A48DB220CC50C0000CBD9C /* VideoController.swift */; };
@@ -72,6 +73,7 @@
 		B924A50120BF662600022264 /* IntroUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IntroUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B924A50520BF662600022264 /* IntroUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroUITests.swift; sourceTree = "<group>"; };
 		B924A50720BF662600022264 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B92C07162131CF2C0093B818 /* HeartEyes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartEyes.swift; sourceTree = "<group>"; };
 		B95F448C2127AF6D008864C2 /* OnboardingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingController.swift; sourceTree = "<group>"; };
 		B970E83920CE60B2002449BA /* InformationOneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationOneController.swift; sourceTree = "<group>"; };
 		B9A48DB220CC50C0000CBD9C /* VideoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoController.swift; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 				B924A4EE20BF662600022264 /* LaunchScreen.storyboard */,
 				B924A4F120BF662600022264 /* Info.plist */,
 				B9CD1A1A20EFFADA004EC0BC /* Location */,
+				B92C07152131CF050093B818 /* Animations */,
 				B9003D7D20E8098700AC79CB /* Video */,
 				B9003D7C20E8097D00AC79CB /* Login */,
 				B9CD1A1320EEB01E004EC0BC /* Timers */,
@@ -242,6 +245,14 @@
 				B924A50720BF662600022264 /* Info.plist */,
 			);
 			path = IntroUITests;
+			sourceTree = "<group>";
+		};
+		B92C07152131CF050093B818 /* Animations */ = {
+			isa = PBXGroup;
+			children = (
+				B92C07162131CF2C0093B818 /* HeartEyes.swift */,
+			);
+			path = Animations;
 			sourceTree = "<group>";
 		};
 		B9CD1A1320EEB01E004EC0BC /* Timers */ = {
@@ -515,6 +526,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B92C07172131CF2C0093B818 /* HeartEyes.swift in Sources */,
 				B924A4E820BF662300022264 /* ViewController.swift in Sources */,
 				B9CD1A1520EEB041004EC0BC /* TimersController.swift in Sources */,
 				B95F448D2127AF6D008864C2 /* OnboardingController.swift in Sources */,

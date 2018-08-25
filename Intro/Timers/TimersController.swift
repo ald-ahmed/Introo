@@ -111,21 +111,19 @@ extension ViewController {
     
     
     func removeBlur() {
-        if var viewWithTag = self.VideoView.viewWithTag(100) {
-    
+        
+     
+            var viewWithTag = self.VideoView.viewWithTag(0xDEADBEEF)
+        
             UIView.animate(withDuration: 1, delay: 0.0, options: [.curveEaseOut], animations: {
         
-            viewWithTag.alpha = 0;
+                viewWithTag?.alpha = 0;
         
             }, completion: { (finished: Bool) in
-                viewWithTag.removeFromSuperview()
+                viewWithTag?.removeFromSuperview()
             })
     
-        }
-        else {
-            print("blur not found")
-        }
-    
+        
     }
     
     

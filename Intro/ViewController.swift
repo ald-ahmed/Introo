@@ -24,9 +24,9 @@ import Pastel
 import Repeat
 import PhoneNumberKit
 import AnimatedCollectionViewLayout
+import SAConfettiView
 
 class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndicatorViewable, UICollectionViewDelegate, UICollectionViewDataSource {
-    
     
     
     @IBOutlet weak var ActiveCollectionView: ActiveCollectionView!
@@ -116,16 +116,19 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         UIApplication.shared.isIdleTimerDisabled = true
         
+        
+        
+    
         self.ActiveCollectionView.delegate = self;
         self.ActiveCollectionView.dataSource = self;
 
-        self.ref = Database.database().reference()
+        self.ref = Database.database().reference();
         self.initFreshSession();
         
-        self.setActiveToOff()
+        self.setActiveToOff();
 
         self.makeYourselfActive();
-        self.loadQuestions()
+        self.loadQuestions();
         
         self.VideoView.parentView = self;
         
@@ -175,10 +178,14 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         self.view.addGestureRecognizer(panGesture)
 
         
-        self.activityIndicatorView = NVActivityIndicatorView(frame: self.QuestionCardView.frame, type: .ballTrianglePath, color: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),padding: 50 )
-//        activityIndicatorView.addGestureRecognizer(swipeUp)
+        
+        let middleFrame = CGRect(x:self.view.bounds.midX-50, y:self.view.bounds.midY-60, width:100, height:100)
+        
+        self.activityIndicatorView = NVActivityIndicatorView(frame: middleFrame, type: .ballTrianglePath, color: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1), padding: 0 )
+        
         activityIndicatorView.isUserInteractionEnabled = false
         self.view.addSubview(activityIndicatorView)
+        
         
         let pastelView = PastelView(frame: view.bounds)
         
@@ -240,6 +247,11 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
             // failed to record!
         }
         
+        let confettiView = HeartEyes(frame: self.view.bounds)
+        confettiView.intensity = 5
+        self.view.addSubview(confettiView)
+        confettiView.playFor(seconds: 3.0)
+
     }
     
     
@@ -247,15 +259,11 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         print("view did appear view controller")
         
-        if count==0 {
-            self.performSegue(withIdentifier: "goToSettings", sender: self)
-            count = 1
-        }
-
-        self.ref.child("users").child(self.uniqueUserID).child("name").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+        //        TODO: check for name and phone number and gender info
+        self.ref.child("users").child(self.uniqueUserID).child("phoneNumber").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
             
                 let existence = snapshot.value as? String ?? ""
-            print("existence", existence)
+                print("existence", existence)
             
                 if (existence == "" || snapshot.value == nil ){
                     self.endMatching()
@@ -265,13 +273,14 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
                 else {
                     
                     if (!self.menuImage.isHidden){
-                        self.startMatching()
+//                        self.startMatching()
                     }
                     
                     self.VideoView.createPreview();
                 }
             
-            });
+        });
+        
 
     }
     
@@ -376,6 +385,11 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
                 generator.impactOccurred()
                 self.disconnectFromSession()
                 
+                if self.swipeToStartMessage.isHidden == false {
+                    self.startMatching()
+                    self.swipeToStartMessage.isHidden = true;
+                }
+                
             }
             
             self.animateSkipSlider(width: 0)
@@ -391,7 +405,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         self.timerBGView.isHidden = true;
         self.waveform.isHidden = true;
         self.nameLabel.isHidden = true;
-        //        self.recordButton.isHidden = true;
+        self.ActiveCollectionView.isHidden = true;
         
         if (!self.noOneConnectedToMe){
             self.shareNumber.isHidden = false;
@@ -399,7 +413,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         print ("hide all but menu")
         if (self.menuImage.isHidden == false){
-            self.message.isHidden = false;
+//            self.message.isHidden = false;
         }
         
         if (!noOneConnectedToMe){
@@ -607,7 +621,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         print ("foregorund")
         
-        if !self.menuImage.isHidden {
+        if !self.menuImage.isHidden  && self.swipeToStartMessage.isHidden {
             self.startMatching()
         }
         
@@ -628,6 +642,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         self.endMatching();
         self.hideLoadingAnimation();
         self.menuImage.isHidden = true;
+        self.swipeToStartMessage.isHidden = true;
         
     }
     
@@ -773,10 +788,8 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         
         print ("startMatching")
-        print ("name is ", self.nameOfPerson)
 
         self.menuImage.alpha = 0;
-//        self.PreviewView.alpha = 0;
         self.message.alpha = 0;
         self.ActiveCollectionView.isHidden = false;
 
@@ -784,11 +797,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
             self.menuImage.alpha = 1;
             self.menuImage.isHidden = false;
             
-//            self.PreviewView.alpha = 1;
-//            self.PreviewView.isHidden = false;
-
             self.message.alpha = 1;
-            print ("unhide from startMatching()")
             self.message.isHidden = false;
 
         }, completion: nil)
@@ -900,14 +909,16 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     
     
     @IBOutlet weak var message: UILabel!
+    @IBOutlet weak var swipeToStartMessage: UILabel!
     
     func showLoadingAnimation(){
+        
         
         if self.activityIndicatorView.isAnimating { return }
         self.activityIndicatorView.startAnimating()
         print ("unhide from showLoadingAnimation()")
 
-       self.message.isHidden = false;
+        self.message.isHidden = false;
 
     }
     
@@ -1100,7 +1111,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         self.startWaveAnimation();
         
 //        self.recordButton.isHidden = false;
-        self.ActiveCollectionView.isHidden = true;
+//        self.ActiveCollectionView.isHidden = false;
         
         self.startTimer();
         
@@ -1128,7 +1139,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
     }
     
-    func setActiveToOff(){
+    func setActiveToOff() {
         self.ref.child("active").child(self.uniqueUserID).child("active").setValue("0"){ (error, ref) -> Void in
             
         }

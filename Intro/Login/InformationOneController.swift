@@ -9,25 +9,27 @@
 import UIKit
 import BetterSegmentedControl
 import Firebase
+import PhoneNumberKit
 
 class InformationOneController: UIViewController, UITextFieldDelegate {
     
     
     @IBOutlet weak var isA: BetterSegmentedControl!
-    
     @IBOutlet weak var wantsA: BetterSegmentedControl!
-    
     @IBOutlet weak var nameField: UITextField!
-    
-    
     @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var phoneField: PhoneNumberTextField!
+
+    var countryCode = ""
+    var nationalNumber = ""
     
+    var countryCodeConfirmed = ""
+    var nationalNumberConfirmed = ""
+
     var ref: DatabaseReference!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        
 
         let name = UserDefaults.standard.string(forKey: "name") ?? "";
         self.nameField.text = name;
@@ -62,6 +64,9 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         
     }
     
+    
+
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
 //        if let mainViewController = segue.destination as? ViewController {
@@ -72,6 +77,13 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
     
     
 
+    var activeTextField = UITextField()
+    
+    // Assign the newly active text field to your activeTextField variable
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.activeTextField = textField
+    }
+    
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""
         guard let stringRange = Range(range, in: currentText) else { return false }
@@ -91,20 +103,110 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
     }
 
     
-    @objc func dismissKeyboard() {
-
-        view.endEditing(true)
+    
+    
+    @objc func keyboardWasShown(notification: NSNotification) {
         
-        self.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
-
-//        self.phoneNumberConstraint.constant = 100;
+        let info = notification.userInfo!
+        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        
+        self.scrollView.setContentOffset(CGPoint(x: 0, y: keyboardFrame.size.height+30), animated: true)
         
     }
     
     
+    @objc func dismissKeyboard() {
+        
+        let onConfirmation = self.phoneField.placeholder == "enter confirmation code" || self.phoneField.placeholder == "wrong code, try again"
+        
+        
+        if (self.phoneField.isFirstResponder == false) || (self.phoneField.isFirstResponder && self.phoneField.nationalNumber == self.nationalNumberConfirmed) {
+            
+            print ("\n\n dissmiss right away")
+            
+            view.endEditing(true)
+            self.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
+            return;
+            
+        }
+        
+        if (!onConfirmation) {
+            
+            print("phone is focused")
+
+            let text = self.phoneField.text ?? ""
+            
+            if text == "" {
+                self.resetPhoneNumberFieldAndDismiss();
+                return
+            }
+            
+            do {
+                let phoneNumber = try PhoneNumberKit().parse(text)
+                self.countryCode = String(phoneNumber.countryCode)
+                self.nationalNumber = String(phoneNumber.nationalNumber)
+                
+            Verify.sendVerificationCode(self.countryCode, self.nationalNumber)
+                
+                self.phoneField.text = ""
+                self.phoneField.placeholder = "enter confirmation code"
+                self.phoneField.isPartialFormatterEnabled = false;
+                
+                return
+
+            }
+                
+            catch {
+                
+                self.phoneField.text = ""
+                self.phoneField.placeholder = "try again."
+
+                print("error parsing phonenumber")
+                return
+                
+            }
+
+        }
+        
+        else if (onConfirmation && (self.phoneField.text?.count)! > 1) {
+            
+            
+            
+            Verify.validateVerificationCode(self.countryCode, self.nationalNumber, self.phoneField.text!) { checked in
+                if (checked.success) {
+
+                    self.countryCodeConfirmed = self.countryCode
+                    self.nationalNumberConfirmed = self.nationalNumber
+                    self.resetPhoneNumberFieldAndDismiss()
+
+                } else {
+                    self.phoneField.text = ""
+                    self.phoneField.placeholder = "wrong code, try again"
+
+                }
+
+            }
+
+        }
+        
+        else {
+            resetPhoneNumberFieldAndDismiss();
+        }
+        
+    }
+    
+    func resetPhoneNumberFieldAndDismiss() {
+        
+        self.phoneField.text = self.countryCodeConfirmed + self.nationalNumberConfirmed
+        self.phoneField.placeholder = "123-123-1234"
+        self.phoneField.isPartialFormatterEnabled = true;
+        
+        view.endEditing(true)
+        self.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
+
+    }
     
     @objc func changeEmojiIsA(gestureRecognizer: UITapGestureRecognizer) {
-        
         
         let mainViewController = presentingViewController as! ViewController
 
@@ -127,8 +229,6 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
 
         }
 
-        
-
         if Int(self.isA.index) == 0 {
             let index = ((mainViewController.emojiCodeMenCounter)+1)%(mainViewController.emojiCodeMen.count)
             self.isA.titles[0]=mainViewController.emojiCodeMen[index]
@@ -143,18 +243,23 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
             mainViewController.emojiCodeWomenCounter+=1;
         }
         
-        print("change!")
     }
     
-    
-    
-    
+    var phoneConfirmed = false;
+
     @IBAction func pressed(_ sender: Any) {
         
         if ((self.nameField.text?.trim().count)! <= 1){
             self.nameField.becomeFirstResponder();
             return;
         }
+        
+        if (self.nationalNumberConfirmed == "" || self.phoneField.nationalNumber != self.nationalNumberConfirmed) {
+            self.phoneField.becomeFirstResponder();
+            return;
+        }
+        
+        
         
         let mainViewController = presentingViewController as? ViewController
         
@@ -177,6 +282,9 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
             mainViewController?.emojiCodeMenCounter = mainViewController?.emojiCodeMen.index(of: self.isA.titles[0]) ?? 0
             
             mainViewController?.emojiCodeWomenCounter = mainViewController?.emojiCodeWomen.index(of: self.isA.titles[1]) ?? 0
+            
+            
+            mainViewController?.updatePhoneNumber(phoneNumber: self.countryCodeConfirmed+self.nationalNumberConfirmed)
             
             mainViewController?.updateUserProfile()
             mainViewController?.startMatching()
@@ -202,11 +310,11 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         mainViewController.hideLoadingAnimation()
 
         self.ref = Database.database().reference()
-        self.ref.child("users").child(mainViewController.uniqueUserID).child("emoji").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-            
+    self.ref.child("users").child(mainViewController.uniqueUserID).child("emoji").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+        
             let existence = snapshot.value as? String ?? ""
-            print("existence", existence)
-            
+        print("emoji in db: ", existence)
+        
             if (existence == "" || snapshot.value == nil ){
 
             }
@@ -220,39 +328,51 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
                 }
 
             }
-            
+        
         });
         
-
-        
-        
         do {
-            
             try self.isA.setIndex(UInt(UserDefaults.standard.integer(forKey: "isA") ))
             try self.wantsA.setIndex(UInt(UserDefaults.standard.integer(forKey: "wantsA") ))
-            
         }
             
-        catch{
+        catch {
             print("")
         }
         
+        
+        
+    self.ref.child("users").child(mainViewController.uniqueUserID).child("phoneNumber").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            
+            let existence = snapshot.value as? String ?? ""
+            print("phoneNumber in db: ", existence)
+        
+            if (existence=="") {
+                return;
+            }
+        
+            do {
+                
+                let phoneNumber = try PhoneNumberKit().parse(existence)
+                self.countryCodeConfirmed = String(phoneNumber.countryCode)
+                self.nationalNumberConfirmed = String(phoneNumber.nationalNumber)
+                
+                self.resetPhoneNumberFieldAndDismiss()
+                
+            }
+                
+            catch {
+                
+                self.resetPhoneNumberFieldAndDismiss()
+                
+            }
+
+        
+        
+        });
+        
+        
     }
-    
-    
-    
-    
-    
-    
-    @objc func keyboardWasShown(notification: NSNotification) {
-        
-        let info = notification.userInfo!
-        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
-        
-        self.scrollView.setContentOffset(CGPoint(x: 0, y: keyboardFrame.size.height+30), animated: true)
-        
-    }
-    
     
 }
 
@@ -275,8 +395,22 @@ extension String {
         
     }
     
-            func trim() -> String
-        {
-            return self.trimmingCharacters(in: CharacterSet.whitespaces)
-        }
+    func trim() -> String {
+        return self.trimmingCharacters(in: CharacterSet.whitespaces)
+    }
+    
+}
+
+
+extension UIView {
+    var textFieldsInView: [UITextField] {
+        return subviews
+            .filter ({ !($0 is UITextField) })
+            .reduce (( subviews.compactMap { $0 as? UITextField }), { summ, current in
+                return summ + current.textFieldsInView
+            })
+    }
+    var selectedTextField: UITextField? {
+        return textFieldsInView.filter { $0.isFirstResponder }.first
+    }
 }

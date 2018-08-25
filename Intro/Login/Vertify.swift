@@ -32,7 +32,7 @@ struct CheckResult: Codable, WithMessage {
 }
 
 
-class Vertify {
+class Verify {
     
     private static let baseURLString = "https://api.authy.com/protected/json"
     
