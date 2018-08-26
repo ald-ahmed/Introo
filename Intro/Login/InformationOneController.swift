@@ -110,7 +110,11 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         let info = notification.userInfo!
         let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         
-        self.scrollView.setContentOffset(CGPoint(x: 0, y: keyboardFrame.size.height+30), animated: true)
+        
+        //        TODO: make sure to scroll if textfield not in view only. Iterate through all textfields to check
+        if (self.phoneField.isFirstResponder){
+            self.scrollView.setContentOffset(CGPoint(x: 0, y: keyboardFrame.size.height+30), animated: true)
+        }
         
     }
     

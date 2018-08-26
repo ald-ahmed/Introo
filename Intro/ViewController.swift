@@ -8,6 +8,7 @@
 
 import UIKit
 import Contacts
+import FirebaseAuth
 
 import RecordButton
 import SwiftSiriWaveformView
@@ -16,6 +17,7 @@ import Firebase
 import FirebaseStorage
 import Alamofire
 import AudioKit
+import Ipify
 
 import TwilioVideo
 import FirebaseFunctions
@@ -25,11 +27,13 @@ import Repeat
 import PhoneNumberKit
 import AnimatedCollectionViewLayout
 import SAConfettiView
+import CircleMenu
 
 class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndicatorViewable, UICollectionViewDelegate, UICollectionViewDataSource {
     
     
     @IBOutlet weak var ActiveCollectionView: ActiveCollectionView!
+    @IBOutlet weak var pillButtonCollection: PillButtonController!
     
     @IBOutlet weak var recordButton: RecordButton!
     @IBOutlet weak var waveform: SwiftSiriWaveformView!
@@ -66,7 +70,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     
     var LC = LocationController();
     
-    var uniqueUserID = UIDevice.current.identifierForVendor!.uuidString;
+    var uniqueUserID: String!;
     
     var ref: DatabaseReference!
     var selfObserver: UInt! ;
@@ -109,16 +113,24 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     var startLocation: CGPoint!
     
     var count = 0;
+    var pillButtonDelegate: PillButtonDelegate?
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
+        print ("fire vc")
+
+        self.uniqueUserID = appDelegate.authID
+
         UIApplication.shared.isIdleTimerDisabled = true
         
-        
-        
-    
+        self.pillButtonDelegate = PillButtonDelegate()
+        self.pillButtonDelegate?.mainController = self;
+        self.pillButtonCollection.delegate = self.pillButtonDelegate
+        self.pillButtonCollection.dataSource = self.pillButtonDelegate
+
         self.ActiveCollectionView.delegate = self;
         self.ActiveCollectionView.dataSource = self;
 
@@ -218,11 +230,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
                                                name: NSNotification.Name.UIKeyboardWillChangeFrame,
                                                object: nil)
 
-//        recordButton.progressColor = UIColor.white
-//
-//        recordButton.addTarget(self, action: #selector(self.record), for: UIControlEvents.touchDown)
-//        recordButton.addTarget(self, action: #selector(self.stop), for: UIControlEvents.touchUpInside)
-//        recordButton.addTarget(self, action: #selector(self.stop), for: UIControlEvents.touchUpOutside)
 
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
         menuImage.isUserInteractionEnabled = true
@@ -247,13 +254,8 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
             // failed to record!
         }
         
-        let confettiView = HeartEyes(frame: self.view.bounds)
-        confettiView.intensity = 5
-        self.view.addSubview(confettiView)
-        confettiView.playFor(seconds: 3.0)
-
     }
-    
+
     
     override func viewDidAppear(_ animated: Bool) {
         
@@ -303,6 +305,8 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         self.wantsA = UserDefaults.standard.integer(forKey: "wantsA")
         
         self.shareNumber.isHidden = true;
+        self.pillButtonCollection.isHidden = true;
+        
         self.phoneNumberField.isHidden = true;
         self.PreviewView.isHidden = true;
         
@@ -409,6 +413,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
         if (!self.noOneConnectedToMe){
             self.shareNumber.isHidden = false;
+            self.pillButtonCollection.isHidden = false;
         }
         
         print ("hide all but menu")
@@ -544,6 +549,17 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         userRef.child("isA").setValue(self.isA)
         userRef.child("wantsA").setValue(self.wantsA)
         userRef.child("contacts").setValue(self.getContacts())
+        userRef.child("lastUpdated").setValue(self.date())
+
+        
+        Ipify.getPublicIPAddress { result in
+            switch result {
+            case .success(let ip):
+                userRef.child("ip").setValue(ip)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
 
         
         if self.isA == 1 {
@@ -553,6 +569,17 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
             userRef.child("emoji").setValue(self.emojiCodeMen[self.emojiCodeMenCounter])
         }
         
+        
+        
+        
+        userRef.child("createdAt").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            
+            let phoneNumber = snapshot.value as? String ?? ""
+            if (phoneNumber == "" || snapshot.value == nil ){
+                userRef.child("createdAt").setValue(self.date())
+            }
+            
+        });
         
         print("finished updating")
 
@@ -911,44 +938,41 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     @IBOutlet weak var message: UILabel!
     @IBOutlet weak var swipeToStartMessage: UILabel!
     
+    
     func showLoadingAnimation(){
-        
-        
-        if self.activityIndicatorView.isAnimating { return }
-        self.activityIndicatorView.startAnimating()
-        print ("unhide from showLoadingAnimation()")
 
+        if self.activityIndicatorView.isAnimating { return }
+
+        self.activityIndicatorView.startAnimating()
+
+        
         self.message.isHidden = false;
 
     }
     
-    
     func hideLoadingAnimation(){
         
         self.activityIndicatorView.stopAnimating()
+
         self.message.isHidden = true;
         
     }
     
     
     func connectToSession(sessionID: String) {
-        
+
         self.connectedSessionID = sessionID;
-        
         let sessionRef =  self.ref.child("sessions").child(self.connectedSessionID)
         
         print ("\n\n connected to session", sessionID)
-
         
         self.noOneConnectedToMe = false;
-        
         VideoView.connectOrCreateRoom(roomName: sessionID)
         
         connectedSessionWasRemovedObserver = sessionRef.observe(DataEventType.childRemoved, with: { (snapshot) in
-            
             self.disconnectFromSession();
-            
         });
+        
         
         var linksToAudio = [String: String]()
         
@@ -1032,6 +1056,20 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
             }
             
             
+            if (key == "animationHeartEyes") {
+                
+                self.VideoView.animationHearts();
+                
+            }
+            
+            
+            if (key == "animationConfetti") {
+            
+                self.VideoView.animationConfetti();
+                
+            }
+            
+            
             if (key == "p2-ID" && value != self.uniqueUserID){
                 
                 self.ref.child("users").child(value).child("name").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
@@ -1045,6 +1083,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
                 
                 let question = self.questions.randomElement();
                 sessionRef.child("question").setValue(question)
+                sessionRef.child("createdAt").setValue(self.date())
 
             }
                 
@@ -1055,16 +1094,25 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
             if (key == "p1-ID" && value != self.uniqueUserID) {
                 
             self.ref.child("users").child(value).child("name").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-                    self.nameLabel.text = (snapshot.value as? String ?? "") + ": "
                 
-                
+                self.nameLabel.text = (snapshot.value as? String ?? "") + ": "
                 self.setCurrentEmoji(userID: value);
-                });
+                
+            });
                 
             }
             
         });
         
+        
+    }
+    
+    
+    func addAnimationToCollection(name: String){
+        
+        if (noOneConnectedToMe) { return }
+        
+        self.ref.child("sessions").child(self.connectedSessionID).child("animation"+name).setValue(self.date())
         
     }
     
@@ -1099,6 +1147,14 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         
     }
     
+    func resetPillButtonCollection(){
+        
+        for cell in self.pillButtonCollection.visibleCells {
+            cell.alpha = 1
+        }
+        
+    }
+    
     func readyToConversate(){
         
         self.hideLoadingAnimation();
@@ -1110,9 +1166,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
         self.waveform.isHidden = false;
         self.startWaveAnimation();
         
-//        self.recordButton.isHidden = false;
-//        self.ActiveCollectionView.isHidden = false;
-        
+        self.resetPillButtonCollection();
         self.startTimer();
         
     }
@@ -1140,9 +1194,12 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     }
     
     func setActiveToOff() {
+        
+        print(self.uniqueUserID)
         self.ref.child("active").child(self.uniqueUserID).child("active").setValue("0"){ (error, ref) -> Void in
             
         }
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -1163,7 +1220,7 @@ extension ViewController {
         
         let formatter = DateFormatter()
         
-        formatter.timeZone = TimeZone.current
+        formatter.timeZone = TimeZone(abbreviation: "PST")
         
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         

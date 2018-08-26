@@ -8,19 +8,46 @@
 
 import UIKit
 import Firebase
+import FirebaseAuth
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    
-   
+    var authID: String?
+    var isInternetConnected = false
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
 //        print (UIDevice.current.identifierForVendor!.uuidString)
         
-        FirebaseApp.configure()
+        print ("fire appd")
 
+        
+        FirebaseApp.configure()
+    
+        Auth.auth().signInAnonymously() { (authResult, error) in
+            if (error != nil) {
+                print("error in login!")
+            }
+            else {
+                print ("set")
+                self.authID = (authResult?.user.uid)!
+                self.window = UIWindow(frame: UIScreen.main.bounds)
+                
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                
+                let initialViewController = storyboard.instantiateViewController(withIdentifier: "Main")
+                
+                self.window!.rootViewController = initialViewController
+                self.window!.makeKeyAndVisible()
+
+
+            }
+            
+        }
+        
+        
         return true
     }
 
@@ -37,7 +64,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+       
+
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -48,6 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    
 
 }
 

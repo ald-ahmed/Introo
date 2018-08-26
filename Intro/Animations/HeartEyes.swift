@@ -49,7 +49,7 @@ public class HeartEyes: UIView {
     public func startConfetti() {
         emitter = CAEmitterLayer()
         
-        emitter.emitterPosition = CGPoint(x: frame.size.width / 2.0, y: frame.size.height)
+        emitter.emitterPosition = CGPoint(x: frame.size.width / 2.0, y: frame.size.height + 50)
         emitter.emitterShape = kCAEmitterLayerLine
         emitter.emitterSize = CGSize(width: frame.size.width/2.0, height: 1)
         
@@ -68,16 +68,11 @@ public class HeartEyes: UIView {
     }
     
     
-    public func playFor(seconds: Double!){
+    public func playFor(seconds: Double!) {
     
         self.startConfetti()
         DispatchQueue.main.asyncAfter(deadline: .now()+seconds/1.0) {
             self.stopConfetti()
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                self.layer.removeFromSuperlayer()
-            }
-
         }
         
     }

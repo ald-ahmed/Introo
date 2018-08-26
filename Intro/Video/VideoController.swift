@@ -11,6 +11,7 @@ import TwilioVideo
 import FirebaseFunctions
 import Alamofire
 import SAConfettiView
+import Repeat
 
 class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate, TVIRoomDelegate {
     
@@ -83,7 +84,48 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
         
         
     }
+
     
+    //    if we connected to something, we're waiting for video.
+    //    start connectionTimeout at connectOrCreateRoom
+    //    invalidate at videoViewDidReceiveData
+    
+    var connectionTimeout : Repeater!
+    var timeoutCounterDefault = 10;
+    var timeoutCounter = 10;
+    
+    func connectionTimeoutTickDown() {
+        self.timeoutCounter -= 1
+        print ("------- timer ---------> ", self.timeoutCounter)
+        if timeoutCounter <= 0 {
+            print ("------- timed out ---------")
+            self.parentView.disconnectFromSession()
+        }
+        
+    }
+    
+    func startConnectionTimeout(){
+        print ("------- timer START ---------")
+        
+        if (self.connectionTimeout == nil) {
+            self.connectionTimeout = Repeater(interval: .seconds(1), mode: .infinite) { _ in
+                self.connectionTimeoutTickDown();
+            }
+        }
+        
+        self.connectionTimeout.start()
+        
+    }
+    
+    func resetConnectionTimeout() {
+        
+        print ("------- timer RESET ---------")
+        if (self.connectionTimeout != nil) {
+            self.connectionTimeout.pause()
+        }
+        self.timeoutCounter = self.timeoutCounterDefault
+        
+    }
     
     func connectOrCreateRoom(roomName: String) {
         
@@ -95,7 +137,7 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
     
         room = TwilioVideo.connect(with: connectOptions, delegate: self)
 
-        
+        self.startConnectionTimeout();
         
     }
     
@@ -115,8 +157,9 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
 
     }
     
-    func disconnect(){
+    func disconnect() {
         room = nil;
+        self.resetConnectionTimeout();
     }
     
     func didConnectToRoom(room: TVIRoom) {
@@ -209,8 +252,11 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
     }
     
     
+    
     func videoViewDidReceiveData(_ view: TVIVideoView) {
         
+        self.resetConnectionTimeout();
+
         if let foundView = self.viewWithTag(0xDEADBEEF) {
             foundView.removeFromSuperview()
         }
@@ -223,23 +269,76 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
         blurEffectView.tag = 0xDEADBEEF
         self.addSubview(blurEffectView)
         
-        addConfetti()
         
         self.parentView.readyToConversate();
-        // This method is called just once. Make the view visible or animate a transition onscreen here.
         view.isHidden = false
+        
     }
     
     
-    func addConfetti() {
-        let confettiView = SAConfettiView(frame: self.bounds)
-        confettiView.type = .Image("😍".image() as! UIImage)
-        confettiView.colors = [UIColor.white]
+    func animationHearts() {
+        
+        if let foundView = self.viewWithTag(0xFFFFFFFF) {
+            foundView.removeFromSuperview()
+        }
+        
+        let confettiView = HeartEyes(frame: self.bounds)
+        confettiView.intensity = 5
+        
+        confettiView.tag = 0xFFFFFFFF
 
         self.addSubview(confettiView)
-        confettiView.startConfetti()
+        confettiView.playFor(seconds: 3.0)
+        
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6.0) {
+            
+            if let foundView = self.viewWithTag(0xFFFFFFFF) {
+                foundView.removeFromSuperview()
+            }
+            
+        }
+
+        
     }
 
+    
+    
+    func animationConfetti() {
+        
+        if let foundView = self.viewWithTag(0xDDDDDDDD) {
+            foundView.removeFromSuperview()
+        }
+
+        let confettiView = SAConfettiView(frame: self.bounds)
+        confettiView.intensity = 1
+        
+        confettiView.tag = 0xDDDDDDDD
+        
+        self.addSubview(confettiView)
+        let seconds = 3.0
+        confettiView.startConfetti()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now()+seconds/1.0) {
+            confettiView.stopConfetti()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                
+                if let foundView = self.viewWithTag(0xDDDDDDDD) {
+                    foundView.removeFromSuperview()
+                }
+
+            }
+
+        }
+        
+        
+        
+        
+    }
+    
+    
+    
     
 }
 

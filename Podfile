@@ -27,7 +27,6 @@ pod 'NVActivityIndicatorView'
 pod 'AnimatedCollectionViewLayout'
 pod "SAConfettiView"
 
-
 pod 'AudioKit', '~> 4.0'
 pod 'BetterSegmentedControl'
 
@@ -37,7 +36,9 @@ pod "SwiftSiriWaveformView"
 pod "Pastel"
 pod 'Repeat'
 pod 'paper-onboarding'
+pod "Ipify"
 
+pod 'Firebase/Auth'
 
   target 'IntroTests' do
     inherit! :search_paths
