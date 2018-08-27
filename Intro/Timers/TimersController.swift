@@ -113,7 +113,7 @@ extension ViewController {
     func removeBlur() {
         
      
-            var viewWithTag = self.VideoView.viewWithTag(0xDEADBEEF)
+            var viewWithTag = self.VideoView.viewWithTag(123123)
         
             UIView.animate(withDuration: 1, delay: 0.0, options: [.curveEaseOut], animations: {
         

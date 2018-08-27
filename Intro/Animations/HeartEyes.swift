@@ -132,15 +132,18 @@ public class HeartEyes: UIView {
     }
 
     func confettiWithColor() -> CAEmitterCell {
+        
         let confetti = CAEmitterCell()
-        confetti.birthRate = 1.0 * intensity
+        confetti.birthRate = 5.0 * intensity
         confetti.lifetime = 8.0 * intensity
         confetti.lifetimeRange = 0
         confetti.color = UIColor.white.cgColor
-        confetti.velocity = CGFloat(80.0 * intensity)
+        confetti.emissionRange = CGFloat(Double.pi * 0.8)
+        confetti.velocity = CGFloat(120.0 * intensity)
         confetti.contents = self.resizeImage(image: UIImage(named: "hearteyes.png")!, targetSize: CGSize(width:30.0, height:30.0)).cgImage
         
         return confetti
+        
     }
     
     public func isActive() -> Bool {

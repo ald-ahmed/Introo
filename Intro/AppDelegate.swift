@@ -25,7 +25,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         
         FirebaseApp.configure()
-    
+        
+        try! Auth.auth().signOut()
+
         Auth.auth().signInAnonymously() { (authResult, error) in
             if (error != nil) {
                 print("error in login!")

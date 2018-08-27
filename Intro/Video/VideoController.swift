@@ -129,6 +129,8 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
     
     func connectOrCreateRoom(roomName: String) {
         
+        self.createPreview();
+
         let connectOptions = TVIConnectOptions.init(token: accessToken) { (builder) in
             builder.roomName = roomName
             builder.audioTracks = self.localAudioTrack != nil ? [self.localAudioTrack!] : [TVILocalAudioTrack]()
@@ -136,24 +138,27 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
         }
     
         room = TwilioVideo.connect(with: connectOptions, delegate: self)
-
         self.startConnectionTimeout();
         
     }
     
-    func createPreview(){
+    func createPreview() {
         
-            let renderer = TVIVideoView(frame: self.parentView.PreviewView.bounds)
-            renderer.isHidden = true;
-            renderer.shouldMirror = true;
-//            self.parentView.PreviewView.isHidden = false;
-            renderer.layer.cornerRadius = 5;
-            renderer.layer.shadowColor = #colorLiteral(red: 0.1607843137, green: 0.168627451, blue: 0.1607843137, alpha: 1)
-            renderer.layer.shadowOpacity = 0.5;
-            renderer.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
-            
-            self.localVideoTrack?.addRenderer(renderer)
-            self.parentView.PreviewView.addSubview(renderer)
+        if let foundView = self.parentView.PreviewView.viewWithTag(567876) {
+            return;
+        }
+
+        let renderer = TVIVideoView(frame: self.parentView.PreviewView.bounds)
+        renderer.isHidden = true;
+        renderer.shouldMirror = true;
+
+        renderer.layer.cornerRadius = 5;
+        renderer.layer.shadowColor = #colorLiteral(red: 0.1607843137, green: 0.168627451, blue: 0.1607843137, alpha: 1)
+        renderer.layer.shadowOpacity = 0.5;
+        renderer.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
+        renderer.tag = 567876
+        self.localVideoTrack?.addRenderer(renderer)
+        self.parentView.PreviewView.addSubview(renderer)
 
     }
     
@@ -217,8 +222,7 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
         videoTrack.addRenderer(self.remoteView!)
         
         self.addSubview(self.remoteView!)
-        
-
+    
     }
 
     
@@ -257,7 +261,7 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
         
         self.resetConnectionTimeout();
 
-        if let foundView = self.viewWithTag(0xDEADBEEF) {
+        if let foundView = self.viewWithTag(123213) {
             foundView.removeFromSuperview()
         }
         
@@ -266,7 +270,7 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
         //always fill the view
         blurEffectView.frame = self.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        blurEffectView.tag = 0xDEADBEEF
+        blurEffectView.tag = 123123
         self.addSubview(blurEffectView)
         
         
@@ -278,14 +282,16 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
     
     func animationHearts() {
         
-        if let foundView = self.viewWithTag(0xFFFFFFFF) {
+        let tag = 12811119
+
+        if let foundView = self.viewWithTag(12811119) {
             foundView.removeFromSuperview()
         }
         
         let confettiView = HeartEyes(frame: self.bounds)
         confettiView.intensity = 5
         
-        confettiView.tag = 0xFFFFFFFF
+        confettiView.tag = 12811119
 
         self.addSubview(confettiView)
         confettiView.playFor(seconds: 3.0)
@@ -293,7 +299,7 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 6.0) {
             
-            if let foundView = self.viewWithTag(0xFFFFFFFF) {
+            if let foundView = self.viewWithTag(12811119) {
                 foundView.removeFromSuperview()
             }
             
@@ -306,14 +312,15 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
     
     func animationConfetti() {
         
-        if let foundView = self.viewWithTag(0xDDDDDDDD) {
+        let tag = 9284309
+        if let foundView = self.viewWithTag(9284309) {
             foundView.removeFromSuperview()
         }
 
         let confettiView = SAConfettiView(frame: self.bounds)
         confettiView.intensity = 1
         
-        confettiView.tag = 0xDDDDDDDD
+        confettiView.tag = 9284309
         
         self.addSubview(confettiView)
         let seconds = 3.0
@@ -324,7 +331,7 @@ class VideoChatView: UIView, TVIRemoteParticipantDelegate, TVIVideoViewDelegate,
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
                 
-                if let foundView = self.viewWithTag(0xDDDDDDDD) {
+                if let foundView = self.viewWithTag(9284309) {
                     foundView.removeFromSuperview()
                 }
 

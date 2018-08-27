@@ -20,6 +20,12 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var phoneField: PhoneNumberTextField!
 
+    @IBOutlet weak var noteOnEmojiChange: UILabel!
+    @IBOutlet weak var viewForName: UIView!
+    @IBOutlet weak var hiMyNameIs: UILabel!
+    @IBOutlet weak var myPhone: UILabel!
+    @IBOutlet weak var imaandiwanna: UILabel!
+    
     var countryCode = ""
     var nationalNumber = ""
     
@@ -75,7 +81,6 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         
     }
     
-    
 
     var activeTextField = UITextField()
     
@@ -113,15 +118,33 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         
         //        TODO: make sure to scroll if textfield not in view only. Iterate through all textfields to check
         if (self.phoneField.isFirstResponder){
-            self.scrollView.setContentOffset(CGPoint(x: 0, y: keyboardFrame.size.height+30), animated: true)
+            
+            var offset = keyboardFrame.size.height - self.phoneField.layer.frame.origin.y
+            
+            if (keyboardFrame.size.height <  self.phoneField.layer.frame.origin.y){
+                offset = self.phoneField.layer.frame.origin.y - keyboardFrame.size.height ;
+            }
+            
+            self.scrollView.setContentOffset(CGPoint(x: 0, y: offset + 2*self.phoneField.layer.frame.height), animated: true)
+            
+            hiMyNameIs.fadeOut()
+            nameField.fadeOut()
+            imaandiwanna.fadeOut()
+            isA.fadeOut()
+            wantsA.fadeOut()
+            viewForName.fadeOut()
+            noteOnEmojiChange.fadeOut()
         }
+        
         
     }
     
     
+    
     @objc func dismissKeyboard() {
         
-        let onConfirmation = self.phoneField.placeholder == "enter confirmation code" || self.phoneField.placeholder == "wrong code, try again"
+        
+        let onConfirmation = self.phoneField.placeholder == "enter confirmation code here" || self.phoneField.placeholder == "wrong code, try again"
         
         
         if (self.phoneField.isFirstResponder == false) || (self.phoneField.isFirstResponder && self.phoneField.nationalNumber == self.nationalNumberConfirmed) {
@@ -130,6 +153,15 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
             
             view.endEditing(true)
             self.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
+            
+            hiMyNameIs.fadeIn()
+            nameField.fadeIn()
+            imaandiwanna.fadeIn()
+            isA.fadeIn()
+            wantsA.fadeIn()
+            viewForName.fadeIn()
+            noteOnEmojiChange.fadeIn()
+
             return;
             
         }
@@ -153,7 +185,7 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
             Verify.sendVerificationCode(self.countryCode, self.nationalNumber)
                 
                 self.phoneField.text = ""
-                self.phoneField.placeholder = "enter confirmation code"
+                self.phoneField.placeholder = "enter confirmation code here"
                 self.phoneField.isPartialFormatterEnabled = false;
                 
                 return
@@ -207,7 +239,15 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         
         view.endEditing(true)
         self.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
-
+        
+        hiMyNameIs.fadeIn()
+        nameField.fadeIn()
+        imaandiwanna.fadeIn()
+        isA.fadeIn()
+        wantsA.fadeIn()
+        viewForName.fadeIn()
+        noteOnEmojiChange.fadeIn()
+        
     }
     
     @objc func changeEmojiIsA(gestureRecognizer: UITapGestureRecognizer) {
@@ -418,3 +458,31 @@ extension UIView {
         return textFieldsInView.filter { $0.isFirstResponder }.first
     }
 }
+
+
+public extension UIView {
+    
+    /**
+     Fade in a view with a duration
+     
+     - parameter duration: custom animation duration
+     */
+    func fadeIn(withDuration duration: TimeInterval = 1.0) {
+        UIView.animate(withDuration: duration, animations: {
+            self.alpha = 1.0
+        })
+    }
+
+    /**
+     Fade out a view with a duration
+     
+     - parameter duration: custom animation duration
+     */
+    func fadeOut(withDuration duration: TimeInterval = 1.0) {
+        UIView.animate(withDuration: duration, animations: {
+            self.alpha = 0.0
+        })
+    }
+
+}
+

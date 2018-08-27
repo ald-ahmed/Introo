@@ -42,20 +42,20 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Bob Smith" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Smh-yi-bP2">
-                                                <rect key="frame" x="30" y="226" width="245" height="59"/>
+                                                <rect key="frame" x="30" y="226" width="245" height="60"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="50"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="50"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="no" spellCheckingType="no" keyboardAppearance="alert" smartInsertDeleteType="no" textContentType="given-name"/>
                                             </textField>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vMG-YB-tCW">
-                                                <rect key="frame" x="30" y="290" width="245" height="1"/>
+                                                <rect key="frame" x="30" y="291" width="245" height="1"/>
                                                 <color key="backgroundColor" red="0.16078431372549021" green="0.16862745098039217" blue="0.16078431372549021" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="gIO-bT-oS4"/>
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bDB-Tw-gE4">
-                                                <rect key="frame" x="30" y="452" width="245" height="1"/>
+                                                <rect key="frame" x="30" y="453" width="245" height="1"/>
                                                 <color key="backgroundColor" red="0.16078431369999999" green="0.16862745100000001" blue="0.16078431369999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="Yg1-kL-OTt"/>
@@ -72,7 +72,7 @@
                                                 </connections>
                                             </button>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qjv-U3-aje" userLabel="isA" customClass="BetterSegmentedControl" customModule="BetterSegmentedControl">
-                                                <rect key="frame" x="130" y="473" width="145" height="45"/>
+                                                <rect key="frame" x="130" y="474" width="145" height="45"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="45" id="RIk-jI-GTP"/>
@@ -96,7 +96,7 @@
                                                 </userDefinedRuntimeAttributes>
                                             </view>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xti-zL-Cni" userLabel="wantsA" customClass="BetterSegmentedControl" customModule="BetterSegmentedControl">
-                                                <rect key="frame" x="150" y="562" width="125" height="40"/>
+                                                <rect key="frame" x="150" y="563" width="125" height="40"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="40" id="Al6-JD-BR2"/>
@@ -120,7 +120,7 @@
                                                 </userDefinedRuntimeAttributes>
                                             </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalCompressionResistancePriority="1000" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JGr-vl-zal">
-                                                <rect key="frame" x="30" y="473" width="245" height="129"/>
+                                                <rect key="frame" x="30" y="474" width="245" height="129"/>
                                                 <attributedString key="attributedText">
                                                     <fragment>
                                                         <string key="content">I'm a 
@@ -136,7 +136,7 @@ talk to </string>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalCompressionResistancePriority="1000" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NRT-ZB-Y8J">
-                                                <rect key="frame" x="30" y="311" width="245" height="86"/>
+                                                <rect key="frame" x="30" y="312" width="245" height="86"/>
                                                 <attributedString key="attributedText">
                                                     <fragment content="My phone number is">
                                                         <attributes>
@@ -149,14 +149,20 @@ talk to </string>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="123-123-1234" adjustsFontForContentSizeCategory="YES" minimumFontSize="11" translatesAutoresizingMaskIntoConstraints="NO" id="43A-Pc-sox" customClass="PhoneNumberTextField" customModule="PhoneNumberKit">
-                                                <rect key="frame" x="30" y="407" width="245" height="40"/>
+                                                <rect key="frame" x="30" y="408" width="245" height="40"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="40" id="Opg-nz-5gh"/>
                                                 </constraints>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="18"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="18"/>
                                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="phonePad" keyboardAppearance="alert" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no" textContentType="tel"/>
                                             </textField>
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tap on emoji to change it" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="62O-hT-MQR">
+                                                <rect key="frame" x="30" y="611" width="118" height="13"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="11"/>
+                                                <color key="textColor" red="0.1215686277" green="0.1294117719" blue="0.1411764771" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
@@ -169,6 +175,7 @@ talk to </string>
                                             <constraint firstItem="43A-Pc-sox" firstAttribute="leading" secondItem="YAg-Sf-R6x" secondAttribute="leading" constant="30" id="Fzo-ba-1IK"/>
                                             <constraint firstItem="YAg-Sf-R6x" firstAttribute="trailing" secondItem="qjv-U3-aje" secondAttribute="trailing" constant="45" id="G8K-TB-WfK"/>
                                             <constraint firstItem="qjv-U3-aje" firstAttribute="leading" secondItem="JGr-vl-zal" secondAttribute="leading" constant="100" id="KCr-JR-QPm"/>
+                                            <constraint firstItem="62O-hT-MQR" firstAttribute="top" secondItem="JGr-vl-zal" secondAttribute="bottom" constant="8" id="Kbs-be-UND"/>
                                             <constraint firstItem="JGr-vl-zal" firstAttribute="trailing" secondItem="qjv-U3-aje" secondAttribute="trailing" id="Kyq-Wl-tbn"/>
                                             <constraint firstItem="Smh-yi-bP2" firstAttribute="top" secondItem="OOk-3r-1L3" secondAttribute="bottom" constant="5" id="MyN-sH-iwq"/>
                                             <constraint firstItem="JGr-vl-zal" firstAttribute="leading" secondItem="YAg-Sf-R6x" secondAttribute="leading" constant="30" id="ON1-dj-qf1"/>
@@ -180,6 +187,7 @@ talk to </string>
                                             <constraint firstAttribute="trailing" secondItem="OOk-3r-1L3" secondAttribute="trailing" constant="45" id="aAj-ki-G7u"/>
                                             <constraint firstItem="NRT-ZB-Y8J" firstAttribute="top" secondItem="vMG-YB-tCW" secondAttribute="bottom" constant="20" id="akL-5z-tYi"/>
                                             <constraint firstItem="43A-Pc-sox" firstAttribute="top" secondItem="NRT-ZB-Y8J" secondAttribute="bottom" constant="10" id="b5V-7S-Vu9"/>
+                                            <constraint firstItem="62O-hT-MQR" firstAttribute="leading" secondItem="YAg-Sf-R6x" secondAttribute="leading" constant="30" id="dP5-Cd-5dQ"/>
                                             <constraint firstItem="OOk-3r-1L3" firstAttribute="top" secondItem="YAg-Sf-R6x" secondAttribute="top" constant="10" id="dqM-sE-rgE"/>
                                             <constraint firstItem="JX2-zn-uCa" firstAttribute="leading" secondItem="YAg-Sf-R6x" secondAttribute="leading" id="edZ-9T-zQo"/>
                                             <constraint firstItem="Smh-yi-bP2" firstAttribute="leading" secondItem="OOk-3r-1L3" secondAttribute="leading" id="h8t-c3-eH3"/>
@@ -229,16 +237,21 @@ talk to </string>
                     </view>
                     <size key="freeformSize" width="320" height="1000"/>
                     <connections>
+                        <outlet property="hiMyNameIs" destination="OOk-3r-1L3" id="LDs-MG-nKv"/>
+                        <outlet property="imaandiwanna" destination="JGr-vl-zal" id="ns3-RF-4wf"/>
                         <outlet property="isA" destination="qjv-U3-aje" id="IUQ-KQ-j1L"/>
+                        <outlet property="myPhone" destination="NRT-ZB-Y8J" id="icg-1p-GDE"/>
                         <outlet property="nameField" destination="Smh-yi-bP2" id="47G-fP-1F5"/>
+                        <outlet property="noteOnEmojiChange" destination="62O-hT-MQR" id="nWD-dH-TOc"/>
                         <outlet property="phoneField" destination="43A-Pc-sox" id="jEm-om-0IQ"/>
                         <outlet property="scrollView" destination="xWv-PM-jvp" id="ynm-tq-SVc"/>
+                        <outlet property="viewForName" destination="vMG-YB-tCW" id="h9j-Ni-cqQ"/>
                         <outlet property="wantsA" destination="xti-zL-Cni" id="Fzk-o0-uLF"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aSu-pL-PsC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1734" y="533"/>
+            <point key="canvasLocation" x="1861" y="640"/>
         </scene>
         <!--Onboarding Controller-->
         <scene sceneID="5B5-vQ-DvF">
@@ -250,7 +263,7 @@ talk to </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WV0-uY-oKg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="300" y="1321"/>
+            <point key="canvasLocation" x="29" y="640"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -492,7 +505,7 @@ talk to </string>
                             <constraint firstItem="ADF-IF-qPx" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="ejF-Pm-OeG"/>
                             <constraint firstItem="I9u-AR-hmA" firstAttribute="leading" secondItem="T06-0S-Wme" secondAttribute="leading" constant="-20" id="f2S-l4-xqn"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="QTf-1q-kWE" secondAttribute="trailing" constant="30" id="gZ1-6E-h9d"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="I9u-AR-hmA" secondAttribute="bottom" constant="40" id="m35-Df-lOS"/>
+                            <constraint firstAttribute="bottom" secondItem="I9u-AR-hmA" secondAttribute="bottom" constant="40" id="m35-Df-lOS"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="nfa-kv-uq1" secondAttribute="trailing" constant="30" id="mwp-Wh-0vp"/>
                             <constraint firstItem="ADF-IF-qPx" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="nYS-Nb-c5a"/>
                             <constraint firstItem="nfa-kv-uq1" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="15" id="qrJ-GO-pUb"/>
@@ -527,7 +540,7 @@ talk to </string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="301" y="556"/>
+            <point key="canvasLocation" x="996" y="640"/>
         </scene>
     </scenes>
     <resources>

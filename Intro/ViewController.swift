@@ -27,7 +27,6 @@ import Repeat
 import PhoneNumberKit
 import AnimatedCollectionViewLayout
 import SAConfettiView
-import CircleMenu
 
 class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndicatorViewable, UICollectionViewDelegate, UICollectionViewDataSource {
     
@@ -278,7 +277,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
 //                        self.startMatching()
                     }
                     
-                    self.VideoView.createPreview();
                 }
             
         });
@@ -1056,14 +1054,14 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
             }
             
             
-            if (key == "animationHeartEyes") {
+            if (key.range(of:"animationHeartEyes") != nil) {
                 
                 self.VideoView.animationHearts();
                 
             }
             
             
-            if (key == "animationConfetti") {
+            if (key.range(of:"animationConfetti") != nil) {
             
                 self.VideoView.animationConfetti();
                 
@@ -1111,8 +1109,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     func addAnimationToCollection(name: String){
         
         if (noOneConnectedToMe) { return }
-        
-        self.ref.child("sessions").child(self.connectedSessionID).child("animation"+name).setValue(self.date())
+        self.ref.child("sessions").child(self.connectedSessionID).child("animation"+name+String(self.imIFirstOrSecondParticipant)).setValue(self.date())
         
     }
     
