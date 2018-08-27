@@ -163,6 +163,12 @@ talk to </string>
                                                 <color key="textColor" red="0.1215686277" green="0.1294117719" blue="0.1411764771" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" alpha="0.0" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap away to submit" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="38m-8I-gbj">
+                                                <rect key="frame" x="30" y="462" width="96" height="13"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="11"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
@@ -174,6 +180,7 @@ talk to </string>
                                             <constraint firstItem="JGr-vl-zal" firstAttribute="top" secondItem="qjv-U3-aje" secondAttribute="top" id="FAd-9g-HSs"/>
                                             <constraint firstItem="43A-Pc-sox" firstAttribute="leading" secondItem="YAg-Sf-R6x" secondAttribute="leading" constant="30" id="Fzo-ba-1IK"/>
                                             <constraint firstItem="YAg-Sf-R6x" firstAttribute="trailing" secondItem="qjv-U3-aje" secondAttribute="trailing" constant="45" id="G8K-TB-WfK"/>
+                                            <constraint firstItem="38m-8I-gbj" firstAttribute="leading" secondItem="YAg-Sf-R6x" secondAttribute="leading" constant="30" id="JWj-YA-3ZT"/>
                                             <constraint firstItem="qjv-U3-aje" firstAttribute="leading" secondItem="JGr-vl-zal" secondAttribute="leading" constant="100" id="KCr-JR-QPm"/>
                                             <constraint firstItem="62O-hT-MQR" firstAttribute="top" secondItem="JGr-vl-zal" secondAttribute="bottom" constant="8" id="Kbs-be-UND"/>
                                             <constraint firstItem="JGr-vl-zal" firstAttribute="trailing" secondItem="qjv-U3-aje" secondAttribute="trailing" id="Kyq-Wl-tbn"/>
@@ -192,6 +199,7 @@ talk to </string>
                                             <constraint firstItem="JX2-zn-uCa" firstAttribute="leading" secondItem="YAg-Sf-R6x" secondAttribute="leading" id="edZ-9T-zQo"/>
                                             <constraint firstItem="Smh-yi-bP2" firstAttribute="leading" secondItem="OOk-3r-1L3" secondAttribute="leading" id="h8t-c3-eH3"/>
                                             <constraint firstItem="xti-zL-Cni" firstAttribute="leading" secondItem="JGr-vl-zal" secondAttribute="leading" constant="120" id="htw-UW-pRu"/>
+                                            <constraint firstItem="38m-8I-gbj" firstAttribute="top" secondItem="bDB-Tw-gE4" secondAttribute="bottom" constant="8" id="oEb-5i-Vvv"/>
                                             <constraint firstItem="vMG-YB-tCW" firstAttribute="top" secondItem="Smh-yi-bP2" secondAttribute="bottom" constant="5" id="pt7-2F-ONa"/>
                                             <constraint firstItem="YAg-Sf-R6x" firstAttribute="trailing" secondItem="JX2-zn-uCa" secondAttribute="trailing" id="s6j-rC-RdS"/>
                                             <constraint firstAttribute="trailing" secondItem="NRT-ZB-Y8J" secondAttribute="trailing" constant="45" id="sgN-3Q-CWS"/>
@@ -245,6 +253,7 @@ talk to </string>
                         <outlet property="noteOnEmojiChange" destination="62O-hT-MQR" id="nWD-dH-TOc"/>
                         <outlet property="phoneField" destination="43A-Pc-sox" id="jEm-om-0IQ"/>
                         <outlet property="scrollView" destination="xWv-PM-jvp" id="ynm-tq-SVc"/>
+                        <outlet property="tapAwayMessage" destination="38m-8I-gbj" id="jW0-h8-475"/>
                         <outlet property="viewForName" destination="vMG-YB-tCW" id="h9j-Ni-cqQ"/>
                         <outlet property="wantsA" destination="xti-zL-Cni" id="Fzk-o0-uLF"/>
                     </connections>
@@ -338,7 +347,7 @@ talk to </string>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share Number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Su5-CL-dgz">
-                                                    <rect key="frame" x="15" y="0.0" width="67" height="35"/>
+                                                    <rect key="frame" x="15" y="0.0" width="70" height="35"/>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="13"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>

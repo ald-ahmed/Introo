@@ -26,6 +26,8 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var myPhone: UILabel!
     @IBOutlet weak var imaandiwanna: UILabel!
     
+    @IBOutlet weak var tapAwayMessage: UILabel!
+    
     var countryCode = ""
     var nationalNumber = ""
     
@@ -134,6 +136,8 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
             wantsA.fadeOut()
             viewForName.fadeOut()
             noteOnEmojiChange.fadeOut()
+            tapAwayMessage.fadeIn()
+            
         }
         
         
@@ -144,23 +148,22 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
     @objc func dismissKeyboard() {
         
         
-        let onConfirmation = self.phoneField.placeholder == "enter confirmation code here" || self.phoneField.placeholder == "wrong code, try again"
+        let onConfirmation = self.phoneField.placeholder == "enter confirmation code" || self.phoneField.placeholder == "wrong code, try again"
+        
+        if (self.phoneField.placeholder == "loading..."){
+            resetPhoneNumberFieldAndDismiss();
+            return;
+        }
         
         
-        if (self.phoneField.isFirstResponder == false) || (self.phoneField.isFirstResponder && self.phoneField.nationalNumber == self.nationalNumberConfirmed) {
+        if (self.phoneField.isFirstResponder == false) || (self.phoneField.isFirstResponder && self.phoneField.nationalNumber == self.nationalNumberConfirmed && self.nationalNumberConfirmed != "") {
             
-            print ("\n\n dissmiss right away")
+            print ("\n\n dissmiss right away you're confirmed")
             
             view.endEditing(true)
             self.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
             
-            hiMyNameIs.fadeIn()
-            nameField.fadeIn()
-            imaandiwanna.fadeIn()
-            isA.fadeIn()
-            wantsA.fadeIn()
-            viewForName.fadeIn()
-            noteOnEmojiChange.fadeIn()
+            fadeInAll();
 
             return;
             
@@ -178,14 +181,18 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
             }
             
             do {
+                
                 let phoneNumber = try PhoneNumberKit().parse(text)
                 self.countryCode = String(phoneNumber.countryCode)
                 self.nationalNumber = String(phoneNumber.nationalNumber)
                 
-            Verify.sendVerificationCode(self.countryCode, self.nationalNumber)
+                self.phoneField.text = ""
+                self.phoneField.placeholder = "loading..."
+
+                Verify.sendVerificationCode(self.countryCode, self.nationalNumber)
                 
                 self.phoneField.text = ""
-                self.phoneField.placeholder = "enter confirmation code here"
+                self.phoneField.placeholder = "enter confirmation code"
                 self.phoneField.isPartialFormatterEnabled = false;
                 
                 return
@@ -195,7 +202,7 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
             catch {
                 
                 self.phoneField.text = ""
-                self.phoneField.placeholder = "try again."
+                self.phoneField.placeholder = "incorrect number, try again"
 
                 print("error parsing phonenumber")
                 return
@@ -207,8 +214,13 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         else if (onConfirmation && (self.phoneField.text?.count)! > 1) {
             
             
-            
-            Verify.validateVerificationCode(self.countryCode, self.nationalNumber, self.phoneField.text!) { checked in
+            let code = self.phoneField.text!
+            self.phoneField.text = ""
+            self.phoneField.placeholder = "loading..."
+
+            Verify.validateVerificationCode(self.countryCode, self.nationalNumber, code) { checked in
+                
+                
                 if (checked.success) {
 
                     self.countryCodeConfirmed = self.countryCode
@@ -240,6 +252,10 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         view.endEditing(true)
         self.scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
         
+        fadeInAll();
+    }
+    
+    func fadeInAll(){
         hiMyNameIs.fadeIn()
         nameField.fadeIn()
         imaandiwanna.fadeIn()
@@ -247,7 +263,7 @@ class InformationOneController: UIViewController, UITextFieldDelegate {
         wantsA.fadeIn()
         viewForName.fadeIn()
         noteOnEmojiChange.fadeIn()
-        
+        tapAwayMessage.fadeOut()
     }
     
     @objc func changeEmojiIsA(gestureRecognizer: UITapGestureRecognizer) {
@@ -467,7 +483,7 @@ public extension UIView {
      
      - parameter duration: custom animation duration
      */
-    func fadeIn(withDuration duration: TimeInterval = 1.0) {
+    func fadeIn(withDuration duration: TimeInterval = 0.5) {
         UIView.animate(withDuration: duration, animations: {
             self.alpha = 1.0
         })
@@ -478,7 +494,7 @@ public extension UIView {
      
      - parameter duration: custom animation duration
      */
-    func fadeOut(withDuration duration: TimeInterval = 1.0) {
+    func fadeOut(withDuration duration: TimeInterval = 0.5) {
         UIView.animate(withDuration: duration, animations: {
             self.alpha = 0.0
         })

@@ -429,11 +429,11 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, NVActivityIndic
     @IBOutlet weak var shareNumberBottomConstraint: NSLayoutConstraint!
     
     @objc func keyboardWasShown(notification: NSNotification) {
-        let info = notification.userInfo!
-        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+//        let info = notification.userInfo!
+//        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         
         UIView.animate(withDuration: 0.1, animations: { () -> Void in
-            self.shareNumberBottomConstraint.constant = keyboardFrame.size.height + 30
+//            self.shareNumberBottomConstraint.constant = keyboardFrame.size.height + 30
         })
     }
     
